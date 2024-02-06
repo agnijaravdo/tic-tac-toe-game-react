@@ -1,43 +1,138 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./App.css";
 
 function App() {
-  const [board, setBoard] = useState([]);
   const [boardSize, setBoardSize] = useState(3);
   const [player, setPlayer] = useState("0");
-
-  useEffect(() => {
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [selectedColumn, setSelectedColumn] = useState(null);
+  const [isWinner, setIsWinner] = useState(false);
+  const [board, setBoard] = useState(() => {
     const row = new Array(boardSize).fill(null);
 
-    const tempBoard = [];
+    let board = [];
 
     for (let i = 0; i < boardSize; i++) {
-      tempBoard.push([...row]);
+      board.push([...row]);
     }
-    setBoard(tempBoard);
-  }, []);
 
-  function handleOnClick(rowIndex, columnIndex) {
+    return board;
+  });
+
+  function selectCell(rowIndex, columnIndex) {
     console.log(`rowIndex ${rowIndex}, columnIndex ${columnIndex} `);
-    if (!board[rowIndex][columnIndex]) {
+    if (!board[rowIndex][columnIndex] && !isWinner) {
+      setSelectedRow(rowIndex);
+      setSelectedColumn(columnIndex);
       let nextPlayer = player === "X" ? "0" : "X";
       setPlayer(nextPlayer);
       const boardCopy = [...board];
       boardCopy[rowIndex][columnIndex] = nextPlayer;
       setBoard(boardCopy);
+      checkWinner(rowIndex, columnIndex, nextPlayer);
     }
+  }
+
+  function checkWinner(nextRow, nextColumn, nextPlayer) {
+    let verticalWin = true;
+    let horizontalWin = true;
+    let diagonalWin = true;
+    let antidiagonalWin = true;
+
+    if (nextRow == null || nextColumn == null) {
+      return;
+    }
+
+    for (let i = 0; i < boardSize; i++) {
+      if (board[i][nextColumn] !== nextPlayer) {
+        verticalWin = false;
+      }
+      if (board[nextRow][i] !== nextPlayer) {
+        horizontalWin = false;
+      }
+      if (board[i][i] !== nextPlayer) {
+        diagonalWin = false;
+      }
+      if (board[i][boardSize - i - 1] !== nextPlayer) {
+        antidiagonalWin = false;
+      }
+    }
+
+    if (verticalWin || horizontalWin || diagonalWin || antidiagonalWin) {
+      setIsWinner(true);
+    }
+  }
+
+  function resetGame(size = 3) {
+    setBoardSize(size);
+    setPlayer("0");
+    setSelectedRow(null);
+    setSelectedColumn(null);
+    setIsWinner(false);
+    resetBoard(size);
+  }
+
+  function resetBoard(size) {
+    const row = new Array(size).fill(null);
+
+    let board = [];
+
+    for (let i = 0; i < size; i++) {
+      board.push([...row]);
+    }
+
+    setBoard(board);
+  }
+
+  function setNewBoardSize(size) {
+    resetGame(size);
   }
 
   return (
     <div className="App">
       <h1>Tic Tac Toe Game</h1>
+      <h2>Player {player === "X" ? "0" : "X"} turn</h2>
+      <h2>Selected Row: {selectedRow}</h2>
+      <h2>Selected Column: {selectedColumn}</h2>
+      <h2>Board Size: {boardSize}</h2>
+      <hr />
+      <br />
+      <br />
+      <div>
+        Choose Board Size
+        <div>
+          <button
+            className={`${boardSize === 3 ? "selectedButton" : ""}`}
+            onClick={() => setNewBoardSize(3)}
+          >
+            3x3
+          </button>
+          <button
+            className={`${boardSize === 4 ? "selectedButton" : ""}`}
+            onClick={() => setNewBoardSize(4)}
+          >
+            4x4
+          </button>
+          <button
+            className={`${boardSize === 5 ? "selectedButton" : ""}`}
+            onClick={() => setNewBoardSize(5)}
+          >
+            5x5
+          </button>
+        </div>
+      </div>
+
+      <div>Start new game</div>
+      <button onClick={() => resetGame(boardSize)}>Reset Game</button>
+      <br />
+      <br />
       <div>
         {board.map((row, rowIndex) => (
           <div className="row">
             {row.map((column, columnIndex) => (
               <div
                 onClick={() => {
-                  handleOnClick(rowIndex, columnIndex);
+                  selectCell(rowIndex, columnIndex);
                 }}
                 style={{ cursor: "pointer" }}
                 className="column"
@@ -49,6 +144,13 @@ function App() {
         ))}
       </div>
       <br />
+      <h2>
+        {isWinner ? (
+          <div className="winner">Player {player} is a winner</div>
+        ) : (
+          ""
+        )}
+      </h2>
       <div>PLAYER CLICKED ON: </div>
     </div>
   );
