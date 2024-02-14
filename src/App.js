@@ -7,6 +7,7 @@ function App() {
   const [selectedRow, setSelectedRow] = useState(null);
   const [selectedColumn, setSelectedColumn] = useState(null);
   const [isWinner, setIsWinner] = useState(false);
+  const [isDraw, setIsDraw] = useState(false);
   const [board, setBoard] = useState(() => {
     const row = new Array(boardSize).fill(null);
 
@@ -30,6 +31,7 @@ function App() {
       boardCopy[rowIndex][columnIndex] = nextPlayer;
       setBoard(boardCopy);
       checkWinner(rowIndex, columnIndex, nextPlayer);
+      checkDraw();
     }
   }
 
@@ -63,12 +65,25 @@ function App() {
     }
   }
 
+  function checkDraw() {
+    let draw = true;
+    for (let i = 0; i < boardSize; i++) {
+      for (let j = 0; j < boardSize; j++) {
+        if (board[i][j] === null) {
+          draw = false;
+        }
+      }
+    }
+    setIsDraw(draw);
+  }
+
   function resetGame(size = 3) {
     setBoardSize(size);
     setPlayer("0");
     setSelectedRow(null);
     setSelectedColumn(null);
     setIsWinner(false);
+    setIsDraw(false);
     resetBoard(size);
   }
 
@@ -150,10 +165,11 @@ function App() {
       <br />
       <h2>
         {isWinner ? (
-          <div className="winner">Player {player} is a winner</div>
+          <div className="winner">Player {player} is a winner!</div>
         ) : (
           ""
         )}
+        {isDraw ? <div className="draw">No winner! It's a draw!</div> : ""}
       </h2>
       <div>PLAYER CLICKED ON: </div>
     </div>
