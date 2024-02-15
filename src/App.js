@@ -125,8 +125,6 @@ function App() {
         Board Size: {boardSize}x{boardSize}
       </h2>
       <hr />
-      <br />
-      <br />
       <div>
         Choose Board Size
         <div>
@@ -150,7 +148,7 @@ function App() {
           </button>
         </div>
       </div>
-
+      <br />
       <div>Start new game</div>
       <button onClick={() => resetGame(boardSize)}>Reset Game</button>
       <br />

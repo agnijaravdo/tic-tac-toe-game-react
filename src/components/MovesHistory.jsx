@@ -1,3 +1,5 @@
+import React from "react";
+
 const MovesHistory = ({ move: [player, rowIndex, columnIndex], index }) => {
   return (
     <div>
