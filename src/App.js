@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./App.css";
 import MovesHistory from "./components/MovesHistory";
+import GameStatus from "./components/GameStatus";
 
 function App() {
   const [boardSize, setBoardSize] = useState(3);
@@ -113,10 +114,16 @@ function App() {
   return (
     <div className="App">
       <h1>Tic Tac Toe Game</h1>
-      <h2>Player {player === "X" ? "0" : "X"} turn</h2>
+      <GameStatus
+        player={player}
+        isWinner={isWinner}
+        isDraw={isDraw}
+      />
       <h2>Selected Row: {selectedRow}</h2>
       <h2>Selected Column: {selectedColumn}</h2>
-      <h2>Board Size: {boardSize}</h2>
+      <h2>
+        Board Size: {boardSize}x{boardSize}
+      </h2>
       <hr />
       <br />
       <br />
@@ -170,14 +177,6 @@ function App() {
         ))}
       </div>
       <br />
-      <h2>
-        {isWinner ? (
-          <div className="winner">Player {player} is a winner!</div>
-        ) : (
-          ""
-        )}
-        {isDraw ? <div className="draw">No winner! It's a draw!</div> : ""}
-      </h2>
       <div>
         <h2>Moves History</h2>
         <div>

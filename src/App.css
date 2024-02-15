@@ -27,6 +27,10 @@
   color: blue;
 }
 
+.status {
+  color: goldenrod;
+}
+
 .selectedButton {
   background-color: #4caf50;
   color: white;
