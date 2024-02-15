@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./App.css";
+import MovesHistory from "./components/MovesHistory";
 
 function App() {
   const [boardSize, setBoardSize] = useState(3);
@@ -8,6 +9,7 @@ function App() {
   const [selectedColumn, setSelectedColumn] = useState(null);
   const [isWinner, setIsWinner] = useState(false);
   const [isDraw, setIsDraw] = useState(false);
+  const [movesHistory, setMovesHistory] = useState([]);
   const [board, setBoard] = useState(() => {
     const row = new Array(boardSize).fill(null);
 
@@ -21,8 +23,11 @@ function App() {
   });
 
   function selectCell(rowIndex, columnIndex) {
-    console.log(`rowIndex ${rowIndex}, columnIndex ${columnIndex} `);
     if (!board[rowIndex][columnIndex] && !isWinner) {
+      setMovesHistory([
+        ...movesHistory,
+        [player === "X" ? "0" : "X", rowIndex, columnIndex],
+      ]);
       setSelectedRow(rowIndex);
       setSelectedColumn(columnIndex);
       let nextPlayer = player === "X" ? "0" : "X";
@@ -86,6 +91,7 @@ function App() {
     setIsWinner(false);
     setIsDraw(false);
     resetBoard(size);
+    setMovesHistory([]);
   }
 
   function resetBoard(size) {
@@ -172,7 +178,18 @@ function App() {
         )}
         {isDraw ? <div className="draw">No winner! It's a draw!</div> : ""}
       </h2>
-      <div>PLAYER CLICKED ON: </div>
+      <div>
+        <h2>Moves History</h2>
+        <div>
+          {movesHistory.map((move, index) => (
+            <MovesHistory
+              key={`${move[1]}-${index}`}
+              move={move}
+              index={index}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
