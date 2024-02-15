@@ -30,12 +30,11 @@ function App() {
       const boardCopy = [...board];
       boardCopy[rowIndex][columnIndex] = nextPlayer;
       setBoard(boardCopy);
-      checkWinner(rowIndex, columnIndex, nextPlayer);
-      checkDraw();
+      checkWinnerOrDraw(rowIndex, columnIndex, nextPlayer);
     }
   }
 
-  function checkWinner(nextRow, nextColumn, nextPlayer) {
+  function checkWinnerOrDraw(nextRow, nextColumn, nextPlayer) {
     let verticalWin = true;
     let horizontalWin = true;
     let diagonalWin = true;
@@ -62,6 +61,8 @@ function App() {
 
     if (verticalWin || horizontalWin || diagonalWin || antidiagonalWin) {
       setIsWinner(true);
+    } else {
+      checkDraw();
     }
   }
 
