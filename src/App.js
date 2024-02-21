@@ -3,6 +3,7 @@ import "./App.css";
 import MovesHistory from "./components/MovesHistory";
 import GameStatus from "./components/GameStatus";
 import PlayerInfo from "./components/PlayerInfo";
+import Board from "./components/Board";
 
 function App() {
   const [boardSize, setBoardSize] = useState(3);
@@ -167,27 +168,10 @@ function App() {
       <button onClick={() => resetGame(boardSize)}>Reset Game</button>
       <br />
       <br />
-      <div>
-        {board.map((row, rowIndex) => (
-          <div
-            key={rowIndex}
-            className="row"
-          >
-            {row.map((column, columnIndex) => (
-              <div
-                onClick={() => {
-                  selectCell(rowIndex, columnIndex);
-                }}
-                style={{ cursor: "pointer" }}
-                key={columnIndex}
-                className="column"
-              >
-                {board[rowIndex][columnIndex]}
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
+      <Board
+        board={board}
+        selectCell={selectCell}
+      />
       <br />
       <div>
         <h2>Moves History</h2>
