@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./App.css";
 import MovesHistory from "./components/MovesHistory";
 import GameStatus from "./components/GameStatus";
+import PlayerInfo from "./components/PlayerInfo";
 
 function App() {
   const [boardSize, setBoardSize] = useState(3);
@@ -121,6 +122,7 @@ function App() {
       />
       <h2>Selected Row: {selectedRow}</h2>
       <h2>Selected Column: {selectedColumn}</h2>
+      <h2>Current Turn: {movesHistory.length + 1}</h2>
       <h2>
         Board Size: {boardSize}x{boardSize}
       </h2>
@@ -147,6 +149,18 @@ function App() {
             5x5
           </button>
         </div>
+      </div>
+      <div>
+        <ol id="players">
+          <PlayerInfo
+            name="Player 1"
+            symbol="X"
+          />
+          <PlayerInfo
+            name="Player 2"
+            symbol="0"
+          />
+        </ol>
       </div>
       <br />
       <div>Start new game</div>
