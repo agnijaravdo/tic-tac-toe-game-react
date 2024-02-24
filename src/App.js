@@ -7,7 +7,8 @@ import Board from "./components/Board";
 
 function App() {
   const [boardSize, setBoardSize] = useState(3);
-  const [player, setPlayer] = useState("0");
+  const [currentPlayer, setCurrentPlayer] = useState("0");
+  const [player, setPlayer] = useState({ X: "Player 1", 0: "Player 2" });
   const [selectedRow, setSelectedRow] = useState(null);
   const [selectedColumn, setSelectedColumn] = useState(null);
   const [isWinner, setIsWinner] = useState(false);
@@ -29,12 +30,12 @@ function App() {
     if (!board[rowIndex][columnIndex] && !isWinner) {
       setMovesHistory([
         ...movesHistory,
-        [player === "X" ? "0" : "X", rowIndex, columnIndex],
+        [currentPlayer === "X" ? "0" : "X", rowIndex, columnIndex],
       ]);
       setSelectedRow(rowIndex);
       setSelectedColumn(columnIndex);
-      let nextPlayer = player === "X" ? "0" : "X";
-      setPlayer(nextPlayer);
+      let nextPlayer = currentPlayer === "X" ? "0" : "X";
+      setCurrentPlayer(nextPlayer);
       const boardCopy = [...board];
       boardCopy[rowIndex][columnIndex] = nextPlayer;
       setBoard(boardCopy);
@@ -88,7 +89,8 @@ function App() {
 
   function resetGame(size = 3) {
     setBoardSize(size);
-    setPlayer("0");
+    setCurrentPlayer("0");
+    setPlayer({ X: "Player 1", 0: "Player 2" });
     setSelectedRow(null);
     setSelectedColumn(null);
     setIsWinner(false);
@@ -113,14 +115,24 @@ function App() {
     resetGame(size);
   }
 
+  function handleNameChange(symbol, newName) {
+    setPlayer((prevPlayer) => {
+      return {
+        ...prevPlayer,
+        [symbol]: newName,
+      };
+    });
+  }
+
   return (
     <div className="App">
       <h1>Tic Tac Toe Game</h1>
       <GameStatus
-        player={player}
         isWinner={isWinner}
         isDraw={isDraw}
+        playerName={player[currentPlayer]}
       />
+      <h2>Next Player: {player[currentPlayer === "X" ? "0" : "X"]}</h2>
       <h2>Selected Row: {selectedRow}</h2>
       <h2>Selected Column: {selectedColumn}</h2>
       <h2>Current Turn: {movesHistory.length + 1}</h2>
@@ -153,13 +165,17 @@ function App() {
       </div>
       <div>
         <ol id="players">
+          <h3>Player 1:</h3>
           <PlayerInfo
-            name="Player 1"
+            name={player.X}
             symbol="X"
+            onNameChange={handleNameChange}
           />
+          <h3>Player 2:</h3>
           <PlayerInfo
-            name="Player 2"
+            name={player[0]}
             symbol="0"
+            onNameChange={handleNameChange}
           />
         </ol>
       </div>

@@ -1,19 +1,13 @@
 import React, { useState } from "react";
 
-const PlayerInfo = ({ name, symbol }) => {
-  const [playerInfo, setPlayerInfo] = useState({ name, symbol });
+const PlayerInfo = ({ name, symbol, onNameChange }) => {
   const [isEditing, setIsEditing] = useState(false);
-
-  const handleNameChange = (event) => {
-    setPlayerInfo({ ...playerInfo, name: event.target.value });
-  };
-
-  const handleSymbolChange = (event) => {
-    setPlayerInfo({ ...playerInfo, symbol: event.target.value });
-  };
 
   const handleOnClick = () => {
     setIsEditing((prevIsEditing) => !prevIsEditing);
+    if (isEditing) {
+      onNameChange(symbol, name);
+    }
   };
 
   return (
@@ -23,19 +17,14 @@ const PlayerInfo = ({ name, symbol }) => {
           <>
             <input
               type="text"
-              value={playerInfo.name}
-              onChange={handleNameChange}
-            />
-            <input
-              type="text"
-              value={playerInfo.symbol}
-              onChange={handleSymbolChange}
+              value={name}
+              placeholder="Enter player name"
+              onChange={(event) => onNameChange(symbol, event.target.value)}
             />
           </>
         ) : (
           <>
-            <span className="player-name">{playerInfo.name}</span>
-            <span>{playerInfo.symbol}</span>
+            <span className="player-name">{name}</span>
           </>
         )}
       </span>
