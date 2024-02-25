@@ -106,6 +106,16 @@ function App() {
     setIsNewGame((prevIsNewGame) => !prevIsNewGame);
   }
 
+  function resetGameWithSameSettings() {
+    setCurrentPlayer("0");
+    setSelectedRow(null);
+    setSelectedColumn(null);
+    setIsWinner(false);
+    setIsDraw(false);
+    resetBoard(boardSize);
+    setMovesHistory([]);
+  }
+
   function resetBoard(size) {
     const row = new Array(size).fill(null);
 
@@ -189,6 +199,9 @@ function App() {
           </h2>
           <br />
           <button onClick={() => resetGame(3)}>Reset Game</button>
+          <br />
+          <br />
+          <button onClick={resetGameWithSameSettings}>Rematch</button>
           <br />
           <br />
           <Board
