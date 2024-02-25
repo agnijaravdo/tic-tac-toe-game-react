@@ -4,9 +4,11 @@ import MovesHistory from "./components/MovesHistory";
 import GameStatus from "./components/GameStatus";
 import PlayerInfo from "./components/PlayerInfo";
 import Board from "./components/Board";
+import { checkIsDraw, checkIsWinner } from "./utils";
 
 function App() {
   const [boardSize, setBoardSize] = useState(3);
+  const [playerType, setPlayerType] = useState("Human");
   const [isNewGame, setIsNewGame] = useState(false);
   const [currentPlayer, setCurrentPlayer] = useState("0");
   const [players, setPlayers] = useState({
@@ -32,9 +34,9 @@ function App() {
 
   function selectCell(rowIndex, columnIndex) {
     if (!board[rowIndex][columnIndex] && !isWinner) {
-      let nextPlayer = currentPlayer === "X" ? "0" : "X";
-      setMovesHistory([
-        ...movesHistory,
+      const nextPlayer = currentPlayer === "X" ? "0" : "X";
+      setMovesHistory((prevMovesHistory) => [
+        ...prevMovesHistory,
         [players[nextPlayer].name, nextPlayer, rowIndex, columnIndex],
       ]);
       setSelectedRow(rowIndex);
@@ -43,52 +45,31 @@ function App() {
       const boardCopy = [...board];
       boardCopy[rowIndex][columnIndex] = nextPlayer;
       setBoard(boardCopy);
-      checkWinnerOrDraw(rowIndex, columnIndex, nextPlayer);
-    }
-  }
-
-  function checkWinnerOrDraw(nextRow, nextColumn, nextPlayer) {
-    let verticalWin = true;
-    let horizontalWin = true;
-    let diagonalWin = true;
-    let antidiagonalWin = true;
-
-    if (nextRow == null || nextColumn == null) {
-      return;
-    }
-
-    for (let i = 0; i < boardSize; i++) {
-      if (board[i][nextColumn] !== nextPlayer) {
-        verticalWin = false;
-      }
-      if (board[nextRow][i] !== nextPlayer) {
-        horizontalWin = false;
-      }
-      if (board[i][i] !== nextPlayer) {
-        diagonalWin = false;
-      }
-      if (board[i][boardSize - i - 1] !== nextPlayer) {
-        antidiagonalWin = false;
+      const isGameWinner = checkIsWinner({
+        nextRow: rowIndex,
+        nextColumn: columnIndex,
+        nextPlayer,
+        board,
+        boardSize,
+      });
+      const isGameDraw = checkIsDraw({
+        board,
+        boardSize,
+        isWinner: isGameWinner,
+      });
+      setIsWinner(isGameWinner);
+      setIsDraw(isGameDraw);
+      if (
+        playerType === "AI" &&
+        nextPlayer === "X" &&
+        !isGameWinner &&
+        !isGameDraw
+      ) {
+        setTimeout(() => {
+          selectRandomCell();
+        }, 100);
       }
     }
-
-    if (verticalWin || horizontalWin || diagonalWin || antidiagonalWin) {
-      setIsWinner(true);
-    } else {
-      checkDraw();
-    }
-  }
-
-  function checkDraw() {
-    let draw = true;
-    for (let i = 0; i < boardSize; i++) {
-      for (let j = 0; j < boardSize; j++) {
-        if (board[i][j] === null) {
-          draw = false;
-        }
-      }
-    }
-    setIsDraw(draw);
   }
 
   function resetGame(size = 3) {
@@ -136,6 +117,45 @@ function App() {
       };
     });
   }
+  function selectRandomCell() {
+    let availableCells = [];
+    for (let i = 0; i < boardSize; i++) {
+      for (let j = 0; j < boardSize; j++) {
+        if (board[i][j] === null) {
+          availableCells.push([i, j]);
+        }
+      }
+    }
+    if (availableCells.length > 0) {
+      const randomIndex = Math.floor(Math.random() * availableCells.length);
+      const [randomRow, randomColumn] = availableCells[randomIndex];
+
+      const boardCopy = [...board];
+      boardCopy[randomRow][randomColumn] = "0";
+      setBoard(boardCopy);
+
+      setMovesHistory((prevMovesHistory) => [
+        ...prevMovesHistory,
+        [players["0"].name, "0", randomRow, randomColumn],
+      ]);
+
+      const isGameWinner = checkIsWinner({
+        nextRow: randomRow,
+        nextColumn: randomColumn,
+        nextPlayer: "0",
+        board,
+        boardSize,
+      });
+      const isGameDraw = checkIsDraw({
+        board,
+        boardSize,
+        isWinner: isGameWinner,
+      });
+      setIsWinner(isGameWinner);
+      setIsDraw(isGameDraw);
+      setCurrentPlayer("0");
+    }
+  }
 
   return (
     <div className="App">
@@ -178,6 +198,15 @@ function App() {
             onNameChange={handleNameChange}
           />
         </ol>
+        <select
+          value={playerType}
+          onChange={(event) => setPlayerType(event.target.value)}
+        >
+          <option value="Human">Human</option>
+          <option value="AI">AI</option>
+        </select>
+        <br />
+        <br />
       </div>
       <button onClick={(e) => setIsNewGame(true)}>Start New Game</button>
       <hr />
@@ -189,7 +218,7 @@ function App() {
             playerName={players[currentPlayer].name}
           />
           <h2>
-            Next Player: {players[currentPlayer === "X" ? "0" : "X"].name}
+            Current Turn: {players[currentPlayer === "X" ? "0" : "X"].name}
           </h2>
           <h2>Selected Row: {selectedRow}</h2>
           <h2>Selected Column: {selectedColumn}</h2>
