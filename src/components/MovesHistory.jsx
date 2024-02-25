@@ -1,11 +1,14 @@
 import React from "react";
 
-const MovesHistory = ({ move: [player, rowIndex, columnIndex], index }) => {
+const MovesHistory = ({
+  move: [name, symbol, rowIndex, columnIndex],
+  index,
+}) => {
   return (
     <div>
       {`${index + 1}. Player ${
         index % 2 === 0 ? 1 : 2
-      }: ${player} placed on (${rowIndex},${columnIndex})`}
+      }: ${name} placed ${symbol} on (${rowIndex},${columnIndex})`}
     </div>
   );
 };
