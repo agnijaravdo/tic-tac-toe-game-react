@@ -1,4 +1,21 @@
-function checkIsWinner({ nextRow, nextColumn, nextPlayer, board, boardSize }) {
+import { BoardGrid, BoardSize } from "./types/types";
+
+type CheckIsWinnerParams = {
+  nextRow: number;
+  nextColumn: number;
+  nextPlayer: string;
+  board: BoardGrid;
+  boardSize: BoardSize;
+}
+
+type CheckIsDrawParams = {
+  board: BoardGrid;
+  boardSize: number;
+  isWinner: boolean;
+};
+
+
+function checkIsWinner({ nextRow, nextColumn, nextPlayer, board, boardSize }: CheckIsWinnerParams): boolean {
   let verticalWin = true;
   let horizontalWin = true;
   let diagonalWin = true;
@@ -30,7 +47,7 @@ function checkIsWinner({ nextRow, nextColumn, nextPlayer, board, boardSize }) {
   }
 }
 
-function checkIsDraw({ board, boardSize, isWinner }) {
+function checkIsDraw({ board, boardSize, isWinner }: CheckIsDrawParams): boolean {
   if (isWinner) return false;
   for (let i = 0; i < boardSize; i++) {
     for (let j = 0; j < boardSize; j++) {

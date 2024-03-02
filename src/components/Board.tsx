@@ -1,6 +1,12 @@
 import React from "react";
+import { BoardGrid } from "../types/types";
 
-const Board = ({ board, selectCell }) => {
+type BoardParams = {
+  board: BoardGrid;
+  selectCell: (rowIndex: number, columnIndex: number) => void;
+};
+
+const Board = ({ board, selectCell }: BoardParams) => {
   return (
     <div>
       {board.map((row, rowIndex) => (

@@ -1,7 +1,13 @@
 import React from "react";
 import Confetti from "react-confetti";
 
-const GameStatus = ({ isWinner, isDraw, playerName }) => {
+type GameStatusParams = {
+  isWinner: boolean;
+  isDraw: boolean;
+  playerName: string;
+};
+
+const GameStatus = ({ isWinner, isDraw, playerName }: GameStatusParams) => {
   return (
     <div>
       {isWinner ? (

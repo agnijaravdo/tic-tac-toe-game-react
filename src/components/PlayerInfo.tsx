@@ -1,6 +1,13 @@
 import React, { useState } from "react";
+import { CurrentPlayer } from "../types/types";
 
-const PlayerInfo = ({ name, symbol, onNameChange }) => {
+type PlayerInfoParams = {
+  name: string;
+  symbol: CurrentPlayer;
+  onNameChange: (symbol: CurrentPlayer, newName: string) => void;
+};
+
+const PlayerInfo = ({ name, symbol, onNameChange }: PlayerInfoParams) => {
   const [newName, setNewName] = useState(name);
   const [isEditing, setIsEditing] = useState(false);
 

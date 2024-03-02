@@ -5,25 +5,37 @@ import GameStatus from "./components/GameStatus";
 import PlayerInfo from "./components/PlayerInfo";
 import Board from "./components/Board";
 import { checkIsDraw, checkIsWinner } from "./utils";
+import {
+  BoardGrid,
+  BoardSize,
+  CurrentPlayer,
+  HistoryEntry,
+} from "./types/types";
+
+type PlayerType = "Human" | "AI";
+type Players = {
+  X: { name: string };
+  0: { name: string };
+};
 
 function App() {
-  const [boardSize, setBoardSize] = useState(3);
-  const [playerType, setPlayerType] = useState("Human");
+  const [boardSize, setBoardSize] = useState<BoardSize>(3);
+  const [playerType, setPlayerType] = useState<PlayerType>("Human");
   const [isNewGame, setIsNewGame] = useState(false);
-  const [currentPlayer, setCurrentPlayer] = useState("0");
-  const [players, setPlayers] = useState({
+  const [currentPlayer, setCurrentPlayer] = useState<CurrentPlayer>("0");
+  const [players, setPlayers] = useState<Players>({
     X: { name: "Player 1" },
     0: { name: "Player 2" },
   });
-  const [selectedRow, setSelectedRow] = useState(null);
-  const [selectedColumn, setSelectedColumn] = useState(null);
+  const [selectedRow, setSelectedRow] = useState<number | null>(null);
+  const [selectedColumn, setSelectedColumn] = useState<number | null>(null);
   const [isWinner, setIsWinner] = useState(false);
   const [isDraw, setIsDraw] = useState(false);
-  const [movesHistory, setMovesHistory] = useState([]);
-  const [board, setBoard] = useState(() => {
+  const [movesHistory, setMovesHistory] = useState<HistoryEntry[]>([]);
+  const [board, setBoard] = useState<BoardGrid>(() => {
     const row = new Array(boardSize).fill(null);
 
-    let board = [];
+    let board: BoardGrid = [];
 
     for (let i = 0; i < boardSize; i++) {
       board.push([...row]);
@@ -32,7 +44,7 @@ function App() {
     return board;
   });
 
-  function selectCell(rowIndex, columnIndex) {
+  function selectCell(rowIndex: number, columnIndex: number) {
     if (!board[rowIndex][columnIndex] && !isWinner) {
       const nextPlayer = currentPlayer === "X" ? "0" : "X";
       setMovesHistory((prevMovesHistory) => [
@@ -72,7 +84,7 @@ function App() {
     }
   }
 
-  function resetGame(size = 3) {
+  function resetGame(boardSize: BoardSize = 3) {
     setCurrentPlayer("0");
     setPlayers({
       X: { name: "Player 1" },
@@ -82,7 +94,7 @@ function App() {
     setSelectedColumn(null);
     setIsWinner(false);
     setIsDraw(false);
-    resetBoard(size);
+    resetBoard(boardSize);
     setMovesHistory([]);
     setIsNewGame((prevIsNewGame) => !prevIsNewGame);
   }
@@ -97,10 +109,10 @@ function App() {
     setMovesHistory([]);
   }
 
-  function resetBoard(size) {
+  function resetBoard(size: BoardSize) {
     const row = new Array(size).fill(null);
 
-    let board = [];
+    let board: any[] = [];
 
     for (let i = 0; i < size; i++) {
       board.push([...row]);
@@ -109,7 +121,7 @@ function App() {
     setBoard(board);
   }
 
-  function handleNameChange(symbol, newName) {
+  function handleNameChange(symbol: CurrentPlayer, newName: string) {
     setPlayers((prevPlayers) => {
       return {
         ...prevPlayers,
@@ -118,7 +130,7 @@ function App() {
     });
   }
   function selectRandomCell() {
-    let availableCells = [];
+    let availableCells: any[] = [];
     for (let i = 0; i < boardSize; i++) {
       for (let j = 0; j < boardSize; j++) {
         if (board[i][j] === null) {
@@ -200,7 +212,7 @@ function App() {
         </ol>
         <select
           value={playerType}
-          onChange={(event) => setPlayerType(event.target.value)}
+          onChange={(event) => setPlayerType(event.target.value as PlayerType)}
         >
           <option value="Human">Human</option>
           <option value="AI">AI</option>
