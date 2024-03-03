@@ -112,7 +112,7 @@ function App() {
         !isGameDraw
       ) {
         setTimeout(() => {
-          selectRandomCell();
+          selectRandomCell(boardCopy);
         }, 100);
       }
     }
@@ -167,7 +167,8 @@ function App() {
       };
     });
   }
-  function selectRandomCell() {
+
+  function selectRandomCell(board: BoardGrid) {
     let availableCells: any[] = [];
     for (let i = 0; i < boardSize; i++) {
       for (let j = 0; j < boardSize; j++) {
@@ -180,9 +181,10 @@ function App() {
       const randomIndex = Math.floor(Math.random() * availableCells.length);
       const [randomRow, randomColumn] = availableCells[randomIndex];
 
-      const boardCopy = [...board];
+      const boardCopy = structuredClone(board);
       boardCopy[randomRow][randomColumn] = "0";
       setBoard(boardCopy);
+      setBoardHistory((prevBoardHistory) => [...prevBoardHistory, boardCopy]);
 
       setMovesHistory((prevMovesHistory) => [
         ...prevMovesHistory,
@@ -193,11 +195,11 @@ function App() {
         nextRow: randomRow,
         nextColumn: randomColumn,
         nextPlayer: "0",
-        board,
+        board: boardCopy,
         boardSize,
       });
       const isGameDraw = checkIsDraw({
-        board,
+        board: boardCopy,
         boardSize,
         isWinner: isGameWinner,
       });
