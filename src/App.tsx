@@ -267,6 +267,7 @@ function App() {
           <GameStatus
             isWinner={isWinner}
             isDraw={isDraw}
+            isReplay={isReplay}
             playerName={players[currentPlayer].name}
           />
           <h2>

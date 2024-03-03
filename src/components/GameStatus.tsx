@@ -4,13 +4,19 @@ import Confetti from "react-confetti";
 type GameStatusParams = {
   isWinner: boolean;
   isDraw: boolean;
+  isReplay: boolean;
   playerName: string;
 };
 
-const GameStatus = ({ isWinner, isDraw, playerName }: GameStatusParams) => {
+const GameStatus = ({
+  isWinner,
+  isDraw,
+  isReplay,
+  playerName,
+}: GameStatusParams) => {
   return (
     <div>
-      {isWinner ? (
+      {isWinner && !isReplay ? (
         <>
           <h2 className="winner">Player {playerName} is a winner!</h2>
           <Confetti />
