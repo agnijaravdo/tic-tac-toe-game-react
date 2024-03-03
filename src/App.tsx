@@ -284,9 +284,14 @@ function App() {
           <br />
           <br />
           <button onClick={resetGameWithSameSettings}>Rematch</button>
-          <br />
-          <br />
-          <button onClick={() => setIsReplay(true)}>Replay</button>
+          {isWinner || isDraw ? (
+            <div>
+              <br />
+              <button onClick={() => setIsReplay(true)}>Replay</button>
+            </div>
+          ) : (
+            ""
+          )}
           <br />
           <br />
           <Board
