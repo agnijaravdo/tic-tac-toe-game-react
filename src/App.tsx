@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import MovesHistory from "./components/MovesHistory";
 import GameStatus from "./components/GameStatus";
@@ -31,6 +31,18 @@ function App() {
   const [selectedColumn, setSelectedColumn] = useState<number | null>(null);
   const [isWinner, setIsWinner] = useState(false);
   const [isDraw, setIsDraw] = useState(false);
+  const [isReplay, setIsReplay] = useState(false);
+  const [boardHistory, setBoardHistory] = useState<BoardGrid[]>(() => {
+    const row = new Array(boardSize).fill(null);
+
+    let board: BoardGrid = [];
+
+    for (let i = 0; i < boardSize; i++) {
+      board.push([...row]);
+    }
+
+    return [board];
+  });
   const [movesHistory, setMovesHistory] = useState<HistoryEntry[]>([]);
   const [board, setBoard] = useState<BoardGrid>(() => {
     const row = new Array(boardSize).fill(null);
@@ -44,6 +56,27 @@ function App() {
     return board;
   });
 
+  useEffect(() => {
+    let timeoutId: number | NodeJS.Timeout;
+
+    if (isReplay) {
+      timeoutId = setTimeout(() => {
+        const boardHistoryCopy = structuredClone(boardHistory);
+        const currentBoard = boardHistoryCopy.shift();
+        if (currentBoard) {
+          setBoard(currentBoard);
+          setBoardHistory(boardHistoryCopy);
+        }
+      }, 1000);
+    }
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [boardHistory, isReplay]);
+
   function selectCell(rowIndex: number, columnIndex: number) {
     if (!board[rowIndex][columnIndex] && !isWinner) {
       const nextPlayer = currentPlayer === "X" ? "0" : "X";
@@ -54,18 +87,19 @@ function App() {
       setSelectedRow(rowIndex);
       setSelectedColumn(columnIndex);
       setCurrentPlayer(nextPlayer);
-      const boardCopy = [...board];
+      const boardCopy = structuredClone(board);
       boardCopy[rowIndex][columnIndex] = nextPlayer;
       setBoard(boardCopy);
+      setBoardHistory((prevBoardHistory) => [...prevBoardHistory, boardCopy]);
       const isGameWinner = checkIsWinner({
         nextRow: rowIndex,
         nextColumn: columnIndex,
         nextPlayer,
-        board,
+        board: boardCopy,
         boardSize,
       });
       const isGameDraw = checkIsDraw({
-        board,
+        board: boardCopy,
         boardSize,
         isWinner: isGameWinner,
       });
@@ -97,6 +131,8 @@ function App() {
     resetBoard(boardSize);
     setMovesHistory([]);
     setIsNewGame((prevIsNewGame) => !prevIsNewGame);
+    setIsReplay(false);
+    setBoardHistory([]);
   }
 
   function resetGameWithSameSettings() {
@@ -107,6 +143,8 @@ function App() {
     setIsDraw(false);
     resetBoard(boardSize);
     setMovesHistory([]);
+    setIsReplay(false);
+    setBoardHistory([]);
   }
 
   function resetBoard(size: BoardSize) {
@@ -243,6 +281,9 @@ function App() {
           <br />
           <br />
           <button onClick={resetGameWithSameSettings}>Rematch</button>
+          <br />
+          <br />
+          <button onClick={() => setIsReplay(true)}>Replay</button>
           <br />
           <br />
           <Board
