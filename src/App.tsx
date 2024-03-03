@@ -12,7 +12,12 @@ import {
   HistoryEntry,
 } from "./types/types";
 
-type PlayerType = "Human" | "AI";
+enum PlayerType {
+  Human = "Human",
+  AI = "AI",
+}
+
+const playerTypes = Object.values(PlayerType);
 type Players = {
   X: { name: string };
   0: { name: string };
@@ -20,7 +25,7 @@ type Players = {
 
 function App() {
   const [boardSize, setBoardSize] = useState<BoardSize>(3);
-  const [playerType, setPlayerType] = useState<PlayerType>("Human");
+  const [playerType, setPlayerType] = useState<PlayerType>(PlayerType.Human);
   const [isNewGame, setIsNewGame] = useState(false);
   const [currentPlayer, setCurrentPlayer] = useState<CurrentPlayer>("0");
   const [players, setPlayers] = useState<Players>({
@@ -106,7 +111,7 @@ function App() {
       setIsWinner(isGameWinner);
       setIsDraw(isGameDraw);
       if (
-        playerType === "AI" &&
+        playerType === PlayerType.AI &&
         nextPlayer === "X" &&
         !isGameWinner &&
         !isGameDraw
@@ -254,8 +259,14 @@ function App() {
           value={playerType}
           onChange={(event) => setPlayerType(event.target.value as PlayerType)}
         >
-          <option value="Human">Human</option>
-          <option value="AI">AI</option>
+          {playerTypes.map((type) => (
+            <option
+              key={type}
+              value={type}
+            >
+              {type}
+            </option>
+          ))}
         </select>
         <br />
         <br />
