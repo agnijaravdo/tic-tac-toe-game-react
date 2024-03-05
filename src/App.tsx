@@ -49,6 +49,7 @@ function App() {
     return [board];
   });
   const [movesHistory, setMovesHistory] = useState<HistoryEntry[]>([]);
+  const [replayIndex, setReplayIndex] = useState(0);
   const [board, setBoard] = useState<BoardGrid>(() => {
     const row = new Array(boardSize).fill(null);
 
@@ -66,11 +67,10 @@ function App() {
 
     if (isReplay) {
       timeoutId = setTimeout(() => {
-        const boardHistoryCopy = structuredClone(boardHistory);
-        const currentBoard = boardHistoryCopy.shift();
+        const currentBoard = boardHistory[replayIndex];
         if (currentBoard) {
           setBoard(currentBoard);
-          setBoardHistory(boardHistoryCopy);
+          setReplayIndex((prevReplayIndex) => prevReplayIndex + 1);
         }
       }, 1000);
     }
@@ -80,7 +80,7 @@ function App() {
         clearTimeout(timeoutId);
       }
     };
-  }, [boardHistory, isReplay]);
+  }, [boardHistory, replayIndex, isReplay]);
 
   function selectCell(rowIndex: number, columnIndex: number) {
     if (!board[rowIndex][columnIndex] && !isWinner) {
@@ -298,7 +298,14 @@ function App() {
           {isWinner || isDraw ? (
             <div>
               <br />
-              <button onClick={() => setIsReplay(true)}>Replay</button>
+              <button
+                onClick={() => {
+                  setIsReplay(true);
+                  setReplayIndex(0);
+                }}
+              >
+                Replay
+              </button>
             </div>
           ) : (
             ""
