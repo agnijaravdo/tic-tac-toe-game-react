@@ -27,6 +27,8 @@ function App() {
   const [boardSize, setBoardSize] = useState<BoardSize>(3);
   const [playerType, setPlayerType] = useState<PlayerType>(PlayerType.Human);
   const [isNewGame, setIsNewGame] = useState(false);
+  const [isManualSelectionCompleted, setIsManualSelectionCompleted] =
+    useState(false);
   const [currentPlayer, setCurrentPlayer] = useState<CurrentPlayer>("0");
   const [players, setPlayers] = useState<Players>({
     X: { name: "Player 1" },
@@ -63,6 +65,76 @@ function App() {
   });
 
   useEffect(() => {
+    function selectCellRandomly(isGameWinner: boolean, isGameDraw: boolean) {
+      if (playerType === PlayerType.AI && !isGameWinner && !isGameDraw) {
+        let availableCells: any[] = [];
+        for (let i = 0; i < boardSize; i++) {
+          for (let j = 0; j < boardSize; j++) {
+            if (board[i][j] === null) {
+              availableCells.push([i, j]);
+            }
+          }
+        }
+        if (availableCells.length > 0) {
+          const randomIndex = Math.floor(Math.random() * availableCells.length);
+          const [randomRow, randomColumn] = availableCells[randomIndex];
+
+          const boardCopy = structuredClone(board);
+          boardCopy[randomRow][randomColumn] = "0";
+          setBoard(boardCopy);
+          setBoardHistory((prevBoardHistory) => [
+            ...prevBoardHistory,
+            boardCopy,
+          ]);
+
+          setMovesHistory((prevMovesHistory) => [
+            ...prevMovesHistory,
+            [players["0"].name, "0", randomRow, randomColumn],
+          ]);
+
+          const isGameWinner = checkIsWinner({
+            nextRow: randomRow,
+            nextColumn: randomColumn,
+            nextPlayer: "0",
+            board: boardCopy,
+            boardSize,
+          });
+          const isGameDraw = checkIsDraw({
+            board: boardCopy,
+            boardSize,
+            isWinner: isGameWinner,
+          });
+          setIsWinner(isGameWinner);
+          setIsDraw(isGameDraw);
+          setCurrentPlayer("0");
+        }
+      }
+    }
+
+    let timeoutId: number | NodeJS.Timeout;
+
+    if (isManualSelectionCompleted && playerType === PlayerType.AI) {
+      timeoutId = setTimeout(() => {
+        selectCellRandomly(isWinner, isDraw);
+        setIsManualSelectionCompleted(false);
+      }, 200);
+    }
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [
+    board,
+    boardSize,
+    isDraw,
+    isManualSelectionCompleted,
+    isWinner,
+    playerType,
+    players,
+  ]);
+
+  useEffect(() => {
     let timeoutId: number | NodeJS.Timeout;
 
     if (isReplay) {
@@ -82,7 +154,9 @@ function App() {
     };
   }, [boardHistory, replayIndex, isReplay]);
 
-  function selectCell(rowIndex: number, columnIndex: number) {
+  function selectCellManually(rowIndex: number, columnIndex: number) {
+    if (isReplay) return; // preventing cell selection when replay is hapenning
+    if (isManualSelectionCompleted && playerType === PlayerType.AI) return; // preventing cell selection when is AI move
     if (!board[rowIndex][columnIndex] && !isWinner) {
       const nextPlayer = currentPlayer === "X" ? "0" : "X";
       setMovesHistory((prevMovesHistory) => [
@@ -110,21 +184,13 @@ function App() {
       });
       setIsWinner(isGameWinner);
       setIsDraw(isGameDraw);
-      if (
-        playerType === PlayerType.AI &&
-        nextPlayer === "X" &&
-        !isGameWinner &&
-        !isGameDraw
-      ) {
-        setTimeout(() => {
-          selectRandomCell(boardCopy);
-        }, 100);
-      }
+      setIsManualSelectionCompleted(true);
     }
   }
 
   function resetGame(boardSize: BoardSize = 3) {
     setCurrentPlayer("0");
+    setIsManualSelectionCompleted(false);
     setPlayers({
       X: { name: "Player 1" },
       0: { name: "Player 2" },
@@ -142,6 +208,7 @@ function App() {
 
   function resetGameWithSameSettings() {
     setCurrentPlayer("0");
+    setIsManualSelectionCompleted(false);
     setSelectedRow(null);
     setSelectedColumn(null);
     setIsWinner(false);
@@ -171,47 +238,6 @@ function App() {
         [symbol]: { ...prevPlayers[symbol], name: newName },
       };
     });
-  }
-
-  function selectRandomCell(board: BoardGrid) {
-    let availableCells: any[] = [];
-    for (let i = 0; i < boardSize; i++) {
-      for (let j = 0; j < boardSize; j++) {
-        if (board[i][j] === null) {
-          availableCells.push([i, j]);
-        }
-      }
-    }
-    if (availableCells.length > 0) {
-      const randomIndex = Math.floor(Math.random() * availableCells.length);
-      const [randomRow, randomColumn] = availableCells[randomIndex];
-
-      const boardCopy = structuredClone(board);
-      boardCopy[randomRow][randomColumn] = "0";
-      setBoard(boardCopy);
-      setBoardHistory((prevBoardHistory) => [...prevBoardHistory, boardCopy]);
-
-      setMovesHistory((prevMovesHistory) => [
-        ...prevMovesHistory,
-        [players["0"].name, "0", randomRow, randomColumn],
-      ]);
-
-      const isGameWinner = checkIsWinner({
-        nextRow: randomRow,
-        nextColumn: randomColumn,
-        nextPlayer: "0",
-        board: boardCopy,
-        boardSize,
-      });
-      const isGameDraw = checkIsDraw({
-        board: boardCopy,
-        boardSize,
-        isWinner: isGameWinner,
-      });
-      setIsWinner(isGameWinner);
-      setIsDraw(isGameDraw);
-      setCurrentPlayer("0");
-    }
   }
 
   return (
@@ -314,7 +340,7 @@ function App() {
           <br />
           <Board
             board={board}
-            selectCell={selectCell}
+            selectCell={selectCellManually}
           />
           <br />
           <div>
