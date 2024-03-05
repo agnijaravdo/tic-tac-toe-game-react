@@ -8,14 +8,10 @@ type PlayerInfoParams = {
 };
 
 const PlayerInfo = ({ name, symbol, onNameChange }: PlayerInfoParams) => {
-  const [newName, setNewName] = useState(name);
   const [isEditing, setIsEditing] = useState(false);
 
   const handleOnClick = () => {
     setIsEditing((prevIsEditing) => !prevIsEditing);
-    if (isEditing) {
-      onNameChange(symbol, newName);
-    }
   };
 
   return (
@@ -25,9 +21,8 @@ const PlayerInfo = ({ name, symbol, onNameChange }: PlayerInfoParams) => {
           <>
             <input
               type="text"
-              value={newName}
               placeholder="Enter player name"
-              onChange={(event) => setNewName(event.target.value)}
+              onChange={(event) => onNameChange(symbol, event.target.value)}
             />
           </>
         ) : (

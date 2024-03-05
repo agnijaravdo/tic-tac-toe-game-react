@@ -244,14 +244,12 @@ function App() {
         <ol id="players">
           <h3>Player 1:</h3>
           <PlayerInfo
-            key={`player-${players.X.name}-${isReplay}`}
             name={players.X.name}
             symbol="X"
             onNameChange={handleNameChange}
           />
           <h3>Player 2:</h3>
           <PlayerInfo
-            key={`player-${players["0"].name}-${isReplay}`}
             name={players["0"].name}
             symbol="0"
             onNameChange={handleNameChange}
