@@ -254,11 +254,13 @@ function App() {
               }}
             >
               <div className="d-flex justify-content-center">
-                <GameInfoCard
-                  boardSize={boardSize}
-                  currentPlayer={currentPlayer}
-                  players={players}
-                />
+                {!isDraw && !isWinner && (
+                  <GameInfoCard
+                    boardSize={boardSize}
+                    currentPlayer={currentPlayer}
+                    players={players}
+                  />
+                )}
               </div>
               <div>
                 <Board
@@ -266,10 +268,14 @@ function App() {
                   selectCell={selectCellManuallyAndUpdateGameStatus}
                 />
               </div>
-              {movesHistory.length > 0 ? (
-                <MovesHistory moves={movesHistory} />
-              ) : (
-                <div style={{ width: "18rem", visibility: "hidden" }}></div>
+              {!isReplay && (
+                <div>
+                  {movesHistory.length > 0 ? (
+                    <MovesHistory moves={movesHistory} />
+                  ) : (
+                    <div style={{ width: "18rem", visibility: "hidden" }}></div>
+                  )}
+                </div>
               )}
             </div>
 
