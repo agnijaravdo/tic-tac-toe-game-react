@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./App.css";
 import MovesHistory from "./components/MovesHistory";
 import GameStatus from "./components/GameStatus";
@@ -17,6 +17,8 @@ import {
 } from "./types/types";
 import BoardSizeSelection from "./components/BoardSizeSelection";
 import OpponentTypeSelection from "./components/OpponentTypeSelection";
+import useRandomCellSelection from "./hooks/useRandomCellSelection";
+import useReplay from "./hooks/useReplay";
 
 function App() {
   const [boardSize, setBoardSize] = useState<BoardSize>(3);
@@ -57,95 +59,30 @@ function App() {
     return board;
   });
 
-  useEffect(() => {
-    function selectCellRandomly(isGameWinner: boolean, isGameDraw: boolean) {
-      if (playerType === PlayerType.AI && !isGameWinner && !isGameDraw) {
-        let availableCells: any[] = [];
-        for (let i = 0; i < boardSize; i++) {
-          for (let j = 0; j < boardSize; j++) {
-            if (board[i][j] === null) {
-              availableCells.push([i, j]);
-            }
-          }
-        }
-        if (availableCells.length > 0) {
-          const randomIndex = Math.floor(Math.random() * availableCells.length);
-          const [randomRow, randomColumn] = availableCells[randomIndex];
-
-          const boardCopy = structuredClone(board);
-          boardCopy[randomRow][randomColumn] = "0";
-          setBoard(boardCopy);
-          setBoardHistory((prevBoardHistory) => [
-            ...prevBoardHistory,
-            boardCopy,
-          ]);
-
-          setMovesHistory((prevMovesHistory) => [
-            ...prevMovesHistory,
-            [players["0"].name, "0", randomRow, randomColumn],
-          ]);
-
-          const isGameWinner = checkIsWinner({
-            nextRow: randomRow,
-            nextColumn: randomColumn,
-            nextPlayer: "0",
-            board: boardCopy,
-            boardSize,
-          });
-          const isGameDraw = checkIsDraw({
-            board: boardCopy,
-            boardSize,
-            isWinner: isGameWinner,
-          });
-          setIsWinner(isGameWinner);
-          setIsDraw(isGameDraw);
-          setCurrentPlayer("0");
-        }
-      }
-    }
-
-    let timeoutId: number | NodeJS.Timeout;
-
-    if (isManualSelectionCompleted && playerType === PlayerType.AI) {
-      timeoutId = setTimeout(() => {
-        selectCellRandomly(isWinner, isDraw);
-        setIsManualSelectionCompleted(false);
-      }, 200);
-    }
-    return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-    };
-  }, [
-    board,
+  useRandomCellSelection({
     boardSize,
+    playerType,
     isDraw,
     isManualSelectionCompleted,
     isWinner,
-    playerType,
+    setIsManualSelectionCompleted,
+    setBoard,
+    setBoardHistory,
+    setMovesHistory,
+    setIsWinner,
+    setIsDraw,
+    setCurrentPlayer,
     players,
-  ]);
+    board,
+  });
 
-  useEffect(() => {
-    let timeoutId: number | NodeJS.Timeout;
-
-    if (isReplay) {
-      timeoutId = setTimeout(() => {
-        const currentBoard = boardHistory[replayIndex];
-        if (currentBoard) {
-          setBoard(currentBoard);
-          setReplayIndex((prevReplayIndex) => prevReplayIndex + 1);
-        }
-      }, 1000);
-    }
-
-    return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-    };
-  }, [boardHistory, replayIndex, isReplay]);
+  useReplay({
+    isReplay,
+    boardHistory,
+    replayIndex,
+    setReplayIndex,
+    setBoard,
+  });
 
   function selectCellManually(rowIndex: number, columnIndex: number) {
     if (isReplay) return; // preventing cell selection when replay is hapenning
@@ -242,15 +179,9 @@ function App() {
       >
         {!isNewGame && (
           <div className="mx-auto p-3">
-            <BoardSizeSelection
-              boardSize={boardSize}
-              resetBoard={resetBoard}
-            />
+            <BoardSizeSelection boardSize={boardSize} resetBoard={resetBoard} />
             <div className="mb-3">
-              <ol
-                id="players"
-                className="list-unstyled"
-              >
+              <ol id="players" className="list-unstyled">
                 <PlayerInfo
                   name={players.X.name}
                   symbol="X"
@@ -298,14 +229,8 @@ function App() {
                 currentPlayer={currentPlayer}
                 players={players}
               />
-              <Board
-                board={board}
-                selectCell={selectCellManually}
-              />
-              <div
-                className="moves-history ms-5"
-                style={{ maxWidth: "18rem" }}
-              >
+              <Board board={board} selectCell={selectCellManually} />
+              <div className="moves-history ms-5" style={{ maxWidth: "18rem" }}>
                 <MovesHistory moves={movesHistory} />
               </div>
             </div>

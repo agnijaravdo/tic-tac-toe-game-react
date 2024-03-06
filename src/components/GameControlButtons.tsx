@@ -6,8 +6,8 @@ type GameControlButtonsParams = {
   resetGameWithSameSettings: () => void;
   isWinner: boolean;
   isDraw: boolean;
-  setIsReplay: (isReplay: boolean) => void;
-  setReplayIndex: (replayIndex: number) => void;
+  setIsReplay: React.Dispatch<React.SetStateAction<boolean>>;
+  setReplayIndex: React.Dispatch<React.SetStateAction<number>>;
 };
 
 const GameControlButtons = ({
@@ -20,10 +20,7 @@ const GameControlButtons = ({
 }: GameControlButtonsParams) => {
   return (
     <div className="text-center">
-      <button
-        className="btn btn-primary m-2"
-        onClick={() => resetGame()}
-      >
+      <button className="btn btn-primary m-2" onClick={() => resetGame()}>
         Reset Game
       </button>
       <button
