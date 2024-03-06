@@ -1,20 +1,24 @@
 import React from "react";
 import { HistoryEntry } from "../types/types";
 
-type MovesHistoryParams = {
-  move: HistoryEntry;
-  index: number;
+type MovesHistoryProps = {
+  moves: HistoryEntry[];
 };
 
-const MovesHistory = ({
-  move: [name, symbol, rowIndex, columnIndex],
-  index,
-}: MovesHistoryParams) => {
+const MovesHistory = ({ moves }: MovesHistoryProps) => {
   return (
     <div>
-      {`${index + 1}. Player ${
-        index % 2 === 0 ? 1 : 2
-      }: ${name} placed ${symbol} on (${rowIndex},${columnIndex})`}
+      <div className="moves-history pt-4">
+        {moves.map(([name, symbol, rowIndex, columnIndex], index) => (
+          <div
+            key={index}
+            className="small mb-1"
+          >
+            <span className="text-muted">Move {index + 1}:</span>
+            <span>{` ${name} placed ${symbol} on (${rowIndex},${columnIndex})`}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

@@ -4,24 +4,19 @@ import MovesHistory from "./components/MovesHistory";
 import GameStatus from "./components/GameStatus";
 import PlayerInfo from "./components/PlayerInfo";
 import Board from "./components/Board";
+import GameInfoCard from "./components/GameInfoCard";
+import GameControlButtons from "./components/GameControlButtons";
 import { checkIsDraw, checkIsWinner } from "./utils";
 import {
   BoardGrid,
   BoardSize,
   CurrentPlayer,
   HistoryEntry,
+  PlayerType,
+  Players,
 } from "./types/types";
-
-enum PlayerType {
-  Human = "Human",
-  AI = "AI",
-}
-
-const playerTypes = Object.values(PlayerType);
-type Players = {
-  X: { name: string };
-  0: { name: string };
-};
+import BoardSizeSelection from "./components/BoardSizeSelection";
+import OpponentTypeSelection from "./components/OpponentTypeSelection";
 
 function App() {
   const [boardSize, setBoardSize] = useState<BoardSize>(3);
@@ -34,8 +29,6 @@ function App() {
     X: { name: "Player 1" },
     0: { name: "Player 2" },
   });
-  const [selectedRow, setSelectedRow] = useState<number | null>(null);
-  const [selectedColumn, setSelectedColumn] = useState<number | null>(null);
   const [isWinner, setIsWinner] = useState(false);
   const [isDraw, setIsDraw] = useState(false);
   const [isReplay, setIsReplay] = useState(false);
@@ -163,8 +156,6 @@ function App() {
         ...prevMovesHistory,
         [players[nextPlayer].name, nextPlayer, rowIndex, columnIndex],
       ]);
-      setSelectedRow(rowIndex);
-      setSelectedColumn(columnIndex);
       setCurrentPlayer(nextPlayer);
       const boardCopy = structuredClone(board);
       boardCopy[rowIndex][columnIndex] = nextPlayer;
@@ -195,8 +186,6 @@ function App() {
       X: { name: "Player 1" },
       0: { name: "Player 2" },
     });
-    setSelectedRow(null);
-    setSelectedColumn(null);
     setIsWinner(false);
     setIsDraw(false);
     resetBoard(boardSize);
@@ -209,8 +198,6 @@ function App() {
   function resetGameWithSameSettings() {
     setCurrentPlayer("0");
     setIsManualSelectionCompleted(false);
-    setSelectedRow(null);
-    setSelectedColumn(null);
     setIsWinner(false);
     setIsDraw(false);
     resetBoard(boardSize);
@@ -241,122 +228,98 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <h1>Tic Tac Toe Game</h1>
-      <div>
-        Choose Board Size
-        <div>
-          <button
-            className={`${boardSize === 3 ? "selectedButton" : ""}`}
-            onClick={() => resetBoard(3)}
-          >
-            3x3
-          </button>
-          <button
-            className={`${boardSize === 4 ? "selectedButton" : ""}`}
-            onClick={() => resetBoard(4)}
-          >
-            4x4
-          </button>
-          <button
-            className={`${boardSize === 5 ? "selectedButton" : ""}`}
-            onClick={() => resetBoard(5)}
-          >
-            5x5
-          </button>
-        </div>
+    <div>
+      <div className="container text-center mt-5">
+        <h1>Tic Tac Toe Game</h1>
       </div>
-      <div>
-        <ol id="players">
-          <h3>Player 1:</h3>
-          <PlayerInfo
-            name={players.X.name}
-            symbol="X"
-            onNameChange={handleNameChange}
-          />
-          <h3>Player 2:</h3>
-          <PlayerInfo
-            name={players["0"].name}
-            symbol="0"
-            onNameChange={handleNameChange}
-          />
-        </ol>
-        <select
-          value={playerType}
-          onChange={(event) => setPlayerType(event.target.value as PlayerType)}
-        >
-          {playerTypes.map((type) => (
-            <option
-              key={type}
-              value={type}
-            >
-              {type}
-            </option>
-          ))}
-        </select>
-        <br />
-        <br />
-      </div>
-      <button onClick={(e) => setIsNewGame(true)}>Start New Game</button>
-      <hr />
-      {isNewGame && (
-        <div>
-          <GameStatus
-            isWinner={isWinner}
-            isDraw={isDraw}
-            isReplay={isReplay}
-            playerName={players[currentPlayer].name}
-          />
-          <h2>
-            Current Turn: {players[currentPlayer === "X" ? "0" : "X"].name}
-          </h2>
-          <h2>Selected Row: {selectedRow}</h2>
-          <h2>Selected Column: {selectedColumn}</h2>
-          <h2>Current Turn: {movesHistory.length + 1}</h2>
-          <h2>
-            Board Size: {boardSize}x{boardSize}
-          </h2>
-          <br />
-          <button onClick={() => resetGame(3)}>Reset Game</button>
-          <br />
-          <br />
-          <button onClick={resetGameWithSameSettings}>Rematch</button>
-          {isWinner || isDraw ? (
-            <div>
-              <br />
-              <button
-                onClick={() => {
-                  setIsReplay(true);
-                  setReplayIndex(0);
-                }}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        {!isNewGame && (
+          <div className="mx-auto p-3">
+            <BoardSizeSelection
+              boardSize={boardSize}
+              resetBoard={resetBoard}
+            />
+            <div className="mb-3">
+              <ol
+                id="players"
+                className="list-unstyled"
               >
-                Replay
+                <PlayerInfo
+                  name={players.X.name}
+                  symbol="X"
+                  onNameChange={handleNameChange}
+                />
+                <PlayerInfo
+                  name={players["0"].name}
+                  symbol="0"
+                  onNameChange={handleNameChange}
+                />
+              </ol>
+              <OpponentTypeSelection
+                playerType={playerType}
+                setPlayerType={setPlayerType}
+              />
+            </div>
+            <div className="text-center mt-4">
+              <button
+                className="btn btn-success"
+                onClick={(e) => setIsNewGame(true)}
+              >
+                Start New Game
               </button>
             </div>
-          ) : (
-            ""
-          )}
-          <br />
-          <br />
-          <Board
-            board={board}
-            selectCell={selectCellManually}
-          />
-          <br />
-          <div>
-            <h2>Moves History</h2>
-            <div>
-              {movesHistory.map((move, index) => (
-                <MovesHistory
-                  key={`${move[1]}-${index}`}
-                  move={move}
-                  index={index}
-                />
-              ))}
-            </div>
           </div>
-        </div>
-      )}
+        )}
+
+        {isNewGame && (
+          <>
+            <GameStatus
+              isWinner={isWinner}
+              isDraw={isDraw}
+              isReplay={isReplay}
+              playerName={players[currentPlayer].name}
+            />
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginBottom: "4rem",
+              }}
+            >
+              <GameInfoCard
+                boardSize={boardSize}
+                currentPlayer={currentPlayer}
+                players={players}
+              />
+              <Board
+                board={board}
+                selectCell={selectCellManually}
+              />
+              <div
+                className="moves-history ms-5"
+                style={{ maxWidth: "18rem" }}
+              >
+                <MovesHistory moves={movesHistory} />
+              </div>
+            </div>
+            <GameControlButtons
+              resetGame={resetGame}
+              resetGameWithSameSettings={resetGameWithSameSettings}
+              isWinner={isWinner}
+              isDraw={isDraw}
+              setIsReplay={setIsReplay}
+              setReplayIndex={setReplayIndex}
+            />
+          </>
+        )}
+      </div>
     </div>
   );
 }

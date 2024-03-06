@@ -15,26 +15,37 @@ const PlayerInfo = ({ name, symbol, onNameChange }: PlayerInfoParams) => {
   };
 
   return (
-    <li>
-      <span className="player">
+    <div className="card mb-3">
+      <div className="card-header">Player {symbol}</div>
+      <div className="card-body d-flex justify-content-between align-items-center">
         {isEditing ? (
           <>
             <input
               type="text"
+              className="form-control me-2"
               placeholder="Enter player name"
               onChange={(event) => onNameChange(symbol, event.target.value)}
             />
+            <button
+              className="btn btn-success ml-2"
+              onClick={handleOnClick}
+            >
+              Save
+            </button>
           </>
         ) : (
           <>
             <span className="player-name">{name}</span>
+            <button
+              className="btn btn-primary"
+              onClick={handleOnClick}
+            >
+              Edit Name
+            </button>
           </>
         )}
-      </span>
-      <button onClick={handleOnClick}>
-        {isEditing ? "Save" : "Edit Name"}
-      </button>
-    </li>
+      </div>
+    </div>
   );
 };
 

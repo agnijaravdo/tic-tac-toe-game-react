@@ -15,18 +15,37 @@ const GameStatus = ({
   playerName,
 }: GameStatusParams) => {
   return (
-    <div>
+    <div className="text-center mt-4">
       {isWinner && !isReplay ? (
         <>
-          <h2 className="winner">Player {playerName} is a winner!</h2>
+          <h2
+            className="winner text-success"
+            style={{ fontSize: "2rem" }}
+          >
+            Player {playerName} is a winner!
+          </h2>
           <Confetti />
         </>
       ) : (
         ""
       )}
-      {isDraw ? <h2 className="draw">No winner! It's a draw!</h2> : ""}
+      {isDraw ? (
+        <h2
+          className="draw text-warning"
+          style={{ fontSize: "2rem" }}
+        >
+          No winner! It's a draw!
+        </h2>
+      ) : (
+        ""
+      )}
       {!isWinner && !isDraw ? (
-        <h2 className="status">Game is in progress!</h2>
+        <h2
+          className="status text-info"
+          style={{ fontSize: "2rem" }}
+        >
+          Game is in progress!
+        </h2>
       ) : (
         ""
       )}
