@@ -11,10 +11,7 @@ const Board = ({ board, selectCell }: BoardParams) => {
     <div className="pt-4">
       <div>
         {board.map((row, rowIndex) => (
-          <div
-            key={rowIndex}
-            className="d-flex justify-content-center"
-          >
+          <div key={rowIndex} className="d-flex justify-content-center">
             {row.map((column, columnIndex) => (
               <div
                 onClick={() => selectCell(rowIndex, columnIndex)}

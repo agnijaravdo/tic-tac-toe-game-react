@@ -123,6 +123,7 @@ function App() {
       X: { name: "Player 1" },
       0: { name: "Player 2" },
     });
+    setPlayerType(PlayerType.Human);
     setIsWinner(false);
     setIsDraw(false);
     resetBoard(boardSize);
@@ -219,21 +220,30 @@ function App() {
             />
             <div
               style={{
-                display: "flex",
-                justifyContent: "center",
+                display: "grid",
+                gridTemplateColumns: "1fr auto 1fr",
+                gap: "20px",
                 marginBottom: "4rem",
+                alignItems: "start",
               }}
             >
-              <GameInfoCard
-                boardSize={boardSize}
-                currentPlayer={currentPlayer}
-                players={players}
-              />
-              <Board board={board} selectCell={selectCellManually} />
-              <div className="moves-history ms-5" style={{ maxWidth: "18rem" }}>
-                <MovesHistory moves={movesHistory} />
+              <div className="d-flex justify-content-center">
+                <GameInfoCard
+                  boardSize={boardSize}
+                  currentPlayer={currentPlayer}
+                  players={players}
+                />
               </div>
+              <div>
+                <Board board={board} selectCell={selectCellManually} />
+              </div>
+              {movesHistory.length > 0 ? (
+                <MovesHistory moves={movesHistory} />
+              ) : (
+                <div style={{ width: "18rem", visibility: "hidden" }}></div>
+              )}
             </div>
+
             <GameControlButtons
               resetGame={resetGame}
               resetGameWithSameSettings={resetGameWithSameSettings}

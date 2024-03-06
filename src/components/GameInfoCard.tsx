@@ -14,16 +14,13 @@ const GameInfoCard = ({
 }: GameInfoCardParams) => {
   return (
     <div className="pt-4">
-      <div
-        className="card me-5"
-        style={{ width: "18rem" }}
-      >
+      <div className="card" style={{ width: "18rem" }}>
         <div className="card-header text-center">Game Info</div>
-        <ul className="list-group list-group-flush">
+        <ul className="list-group list-group-flush text-center">
           <li className="list-group-item">
             Next Turn: {players[currentPlayer === "0" ? "X" : "0"].name}
           </li>
-          <li className="list-group-item">
+          <li className="list-group-item ">
             Board Size: {boardSize}x{boardSize}
           </li>
         </ul>

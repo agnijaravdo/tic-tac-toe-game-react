@@ -13,16 +13,10 @@ const BoardSizeSelection = ({
   return (
     <div>
       <div className="text-center mb-3">
-        <label
-          htmlFor="boardSizeSelect"
-          className="form-label d-block mb-2"
-        >
+        <label htmlFor="boardSizeSelect" className="form-label d-block mb-2">
           Choose Board Size
         </label>
-        <div
-          className="btn-group"
-          role="group"
-        >
+        <div className="btn-group" role="group">
           <button
             type="button"
             className={`btn ${

@@ -15,35 +15,39 @@ const PlayerInfo = ({ name, symbol, onNameChange }: PlayerInfoParams) => {
   };
 
   return (
-    <div className="card mb-3">
+    <div className="card mb-3" style={{ width: "320px" }}>
       <div className="card-header">Player {symbol}</div>
-      <div className="card-body d-flex justify-content-between align-items-center">
-        {isEditing ? (
-          <>
-            <input
-              type="text"
-              className="form-control me-2"
-              placeholder="Enter player name"
-              onChange={(event) => onNameChange(symbol, event.target.value)}
-            />
-            <button
-              className="btn btn-success ml-2"
-              onClick={handleOnClick}
-            >
-              Save
-            </button>
-          </>
-        ) : (
-          <>
-            <span className="player-name">{name}</span>
-            <button
-              className="btn btn-primary"
-              onClick={handleOnClick}
-            >
-              Edit Name
-            </button>
-          </>
-        )}
+      <div className="card-body" style={{ minHeight: "72px" }}>
+        <div className="row align-items-center">
+          {isEditing ? (
+            <>
+              <div className="col">
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Enter player name"
+                  onChange={(event) => onNameChange(symbol, event.target.value)}
+                />
+              </div>
+              <div className="col-auto">
+                <button className="btn btn-success" onClick={handleOnClick}>
+                  Save
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="col">
+                <span className="player-name">{name}</span>
+              </div>
+              <div className="col-auto">
+                <button className="btn btn-primary" onClick={handleOnClick}>
+                  Edit Name
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
