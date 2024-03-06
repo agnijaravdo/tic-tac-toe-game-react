@@ -3,7 +3,7 @@ import { BoardSize } from "../types/types";
 
 type GameControlButtonsParams = {
   resetGame: (boardSize?: BoardSize) => void;
-  resetGameWithSameSettings: () => void;
+  rematchGameWithSameSettings: () => void;
   isWinner: boolean;
   isDraw: boolean;
   setIsReplay: React.Dispatch<React.SetStateAction<boolean>>;
@@ -12,7 +12,7 @@ type GameControlButtonsParams = {
 
 const GameControlButtons = ({
   resetGame,
-  resetGameWithSameSettings,
+  rematchGameWithSameSettings,
   isWinner,
   isDraw,
   setIsReplay,
@@ -25,7 +25,7 @@ const GameControlButtons = ({
       </button>
       <button
         className="btn btn-primary m-2"
-        onClick={resetGameWithSameSettings}
+        onClick={rematchGameWithSameSettings}
       >
         Rematch
       </button>

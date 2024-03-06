@@ -6,6 +6,10 @@ import PlayerInfo from "./components/PlayerInfo";
 import Board from "./components/Board";
 import GameInfoCard from "./components/GameInfoCard";
 import GameControlButtons from "./components/GameControlButtons";
+import BoardSizeSelection from "./components/BoardSizeSelection";
+import OpponentTypeSelection from "./components/OpponentTypeSelection";
+import useRandomCellSelection from "./hooks/useRandomCellSelection";
+import useReplay from "./hooks/useReplay";
 import { checkIsDraw, checkIsWinner } from "./utils";
 import {
   BoardGrid,
@@ -15,25 +19,23 @@ import {
   PlayerType,
   Players,
 } from "./types/types";
-import BoardSizeSelection from "./components/BoardSizeSelection";
-import OpponentTypeSelection from "./components/OpponentTypeSelection";
-import useRandomCellSelection from "./hooks/useRandomCellSelection";
-import useReplay from "./hooks/useReplay";
 
 function App() {
   const [boardSize, setBoardSize] = useState<BoardSize>(3);
   const [playerType, setPlayerType] = useState<PlayerType>(PlayerType.Human);
   const [isNewGame, setIsNewGame] = useState(false);
+  const [currentPlayer, setCurrentPlayer] = useState<CurrentPlayer>("0");
+  const [movesHistory, setMovesHistory] = useState<HistoryEntry[]>([]);
+  const [replayIndex, setReplayIndex] = useState(0);
+  const [isWinner, setIsWinner] = useState(false);
+  const [isDraw, setIsDraw] = useState(false);
+  const [isReplay, setIsReplay] = useState(false);
   const [isManualSelectionCompleted, setIsManualSelectionCompleted] =
     useState(false);
-  const [currentPlayer, setCurrentPlayer] = useState<CurrentPlayer>("0");
   const [players, setPlayers] = useState<Players>({
     X: { name: "Player 1" },
     0: { name: "Player 2" },
   });
-  const [isWinner, setIsWinner] = useState(false);
-  const [isDraw, setIsDraw] = useState(false);
-  const [isReplay, setIsReplay] = useState(false);
   const [boardHistory, setBoardHistory] = useState<BoardGrid[]>(() => {
     const row = new Array(boardSize).fill(null);
 
@@ -45,8 +47,6 @@ function App() {
 
     return [board];
   });
-  const [movesHistory, setMovesHistory] = useState<HistoryEntry[]>([]);
-  const [replayIndex, setReplayIndex] = useState(0);
   const [board, setBoard] = useState<BoardGrid>(() => {
     const row = new Array(boardSize).fill(null);
 
@@ -65,6 +65,8 @@ function App() {
     isDraw,
     isManualSelectionCompleted,
     isWinner,
+    players,
+    board,
     setIsManualSelectionCompleted,
     setBoard,
     setBoardHistory,
@@ -72,8 +74,6 @@ function App() {
     setIsWinner,
     setIsDraw,
     setCurrentPlayer,
-    players,
-    board,
   });
 
   useReplay({
@@ -84,64 +84,90 @@ function App() {
     setBoard,
   });
 
-  function selectCellManually(rowIndex: number, columnIndex: number) {
+  function processAndRecordPlayerMove(
+    rowIndex: number,
+    columnIndex: number,
+    nextPlayer: CurrentPlayer
+  ): BoardGrid {
+    const boardCopy = structuredClone(board);
+    boardCopy[rowIndex][columnIndex] = nextPlayer;
+
+    setBoard(boardCopy);
+    setBoardHistory((prevBoardHistory) => [...prevBoardHistory, boardCopy]);
+
+    setMovesHistory((prevMovesHistory) => [
+      ...prevMovesHistory,
+      [players[nextPlayer].name, nextPlayer, rowIndex, columnIndex],
+    ]);
+
+    return boardCopy;
+  }
+
+  function updateGameStatus(
+    boardCopy: BoardGrid,
+    rowIndex: number,
+    columnIndex: number,
+    nextPlayer: CurrentPlayer
+  ) {
+    const isGameWinner = checkIsWinner({
+      nextRow: rowIndex,
+      nextColumn: columnIndex,
+      nextPlayer,
+      board: boardCopy,
+      boardSize,
+    });
+
+    const isGameDraw = checkIsDraw({
+      board: boardCopy,
+      boardSize,
+      isWinner: isGameWinner,
+    });
+    setIsWinner(isGameWinner);
+    setIsDraw(isGameDraw);
+    setIsManualSelectionCompleted(true);
+    setCurrentPlayer(nextPlayer);
+  }
+
+  function selectCellManuallyAndUpdateGameStatus(
+    rowIndex: number,
+    columnIndex: number
+  ) {
     if (isReplay) return; // preventing cell selection when replay is hapenning
     if (isManualSelectionCompleted && playerType === PlayerType.AI) return; // preventing cell selection when is AI move
     if (!board[rowIndex][columnIndex] && !isWinner) {
       const nextPlayer = currentPlayer === "X" ? "0" : "X";
-      setMovesHistory((prevMovesHistory) => [
-        ...prevMovesHistory,
-        [players[nextPlayer].name, nextPlayer, rowIndex, columnIndex],
-      ]);
-      setCurrentPlayer(nextPlayer);
-      const boardCopy = structuredClone(board);
-      boardCopy[rowIndex][columnIndex] = nextPlayer;
-      setBoard(boardCopy);
-      setBoardHistory((prevBoardHistory) => [...prevBoardHistory, boardCopy]);
-      const isGameWinner = checkIsWinner({
-        nextRow: rowIndex,
-        nextColumn: columnIndex,
-        nextPlayer,
-        board: boardCopy,
-        boardSize,
-      });
-      const isGameDraw = checkIsDraw({
-        board: boardCopy,
-        boardSize,
-        isWinner: isGameWinner,
-      });
-      setIsWinner(isGameWinner);
-      setIsDraw(isGameDraw);
-      setIsManualSelectionCompleted(true);
+      const updatedBoard = processAndRecordPlayerMove(
+        rowIndex,
+        columnIndex,
+        nextPlayer
+      );
+      updateGameStatus(updatedBoard, rowIndex, columnIndex, nextPlayer);
     }
   }
 
-  function resetGame(boardSize: BoardSize = 3) {
+  function resetCommonGameStates(boardSize: BoardSize) {
     setCurrentPlayer("0");
     setIsManualSelectionCompleted(false);
+    setIsWinner(false);
+    setIsDraw(false);
+    resetBoard(boardSize);
+    setMovesHistory([]);
+    setIsReplay(false);
+    setBoardHistory([]);
+  }
+
+  function resetGame(boardSize: BoardSize = 3) {
     setPlayers({
       X: { name: "Player 1" },
       0: { name: "Player 2" },
     });
     setPlayerType(PlayerType.Human);
-    setIsWinner(false);
-    setIsDraw(false);
-    resetBoard(boardSize);
-    setMovesHistory([]);
     setIsNewGame((prevIsNewGame) => !prevIsNewGame);
-    setIsReplay(false);
-    setBoardHistory([]);
+    resetCommonGameStates(boardSize);
   }
 
-  function resetGameWithSameSettings() {
-    setCurrentPlayer("0");
-    setIsManualSelectionCompleted(false);
-    setIsWinner(false);
-    setIsDraw(false);
-    resetBoard(boardSize);
-    setMovesHistory([]);
-    setIsReplay(false);
-    setBoardHistory([]);
+  function rematchGameWithSameSettings() {
+    resetCommonGameStates(boardSize);
   }
 
   function resetBoard(size: BoardSize) {
@@ -235,7 +261,10 @@ function App() {
                 />
               </div>
               <div>
-                <Board board={board} selectCell={selectCellManually} />
+                <Board
+                  board={board}
+                  selectCell={selectCellManuallyAndUpdateGameStatus}
+                />
               </div>
               {movesHistory.length > 0 ? (
                 <MovesHistory moves={movesHistory} />
@@ -246,7 +275,7 @@ function App() {
 
             <GameControlButtons
               resetGame={resetGame}
-              resetGameWithSameSettings={resetGameWithSameSettings}
+              rematchGameWithSameSettings={rematchGameWithSameSettings}
               isWinner={isWinner}
               isDraw={isDraw}
               setIsReplay={setIsReplay}

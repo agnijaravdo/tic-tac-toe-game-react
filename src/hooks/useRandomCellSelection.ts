@@ -8,6 +8,8 @@ type UseRandomCellSelectionParams = {
   isDraw: boolean,
   isManualSelectionCompleted: boolean,
   isWinner: boolean,
+  players: Players,
+  board: BoardGrid,
   setIsManualSelectionCompleted: React.Dispatch<React.SetStateAction<boolean>>;
   setBoard: React.Dispatch<React.SetStateAction<BoardGrid>>;
   setBoardHistory: React.Dispatch<React.SetStateAction<BoardGrid[]>>;
@@ -15,8 +17,6 @@ type UseRandomCellSelectionParams = {
   setIsWinner: React.Dispatch<React.SetStateAction<boolean>>;
   setIsDraw: React.Dispatch<React.SetStateAction<boolean>>;
   setCurrentPlayer: React.Dispatch<React.SetStateAction<CurrentPlayer>>;
-  players: Players,
-  board: BoardGrid,
 };
 
 const useRandomCellSelection = ({
@@ -24,16 +24,16 @@ const useRandomCellSelection = ({
   playerType,
   isDraw,
   isManualSelectionCompleted,
-  setIsManualSelectionCompleted,
   isWinner,
+  players,
+  board,
+  setIsManualSelectionCompleted,
   setBoard,
   setBoardHistory,
   setMovesHistory,
   setIsWinner,
   setIsDraw,
   setCurrentPlayer,
-  players,
-  board,
 }: UseRandomCellSelectionParams) => {
   useEffect(() => {
     function selectCellRandomly(isGameWinner: boolean, isGameDraw: boolean) {
