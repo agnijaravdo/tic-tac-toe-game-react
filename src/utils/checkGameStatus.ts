@@ -1,4 +1,4 @@
-import { BoardGrid, BoardSize } from "./types/types";
+import { BoardGrid, BoardSize } from "../types/types";
 
 type CheckIsWinnerParams = {
   nextRow: number;
@@ -13,7 +13,6 @@ type CheckIsDrawParams = {
   boardSize: number;
   isWinner: boolean;
 };
-
 
 function checkIsWinner({ nextRow, nextColumn, nextPlayer, board, boardSize }: CheckIsWinnerParams): boolean {
   let verticalWin = true;

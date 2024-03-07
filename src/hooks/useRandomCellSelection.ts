@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { checkIsDraw, checkIsWinner } from '../utils';
 import { BoardGrid, BoardSize, CurrentPlayer, HistoryEntry, PlayerType, Players } from '../types/types';
+import { updateGameStatus } from '../utils/updateGameStatus';
 
 type UseRandomCellSelectionParams = {
   boardSize: BoardSize,
@@ -49,9 +49,10 @@ const useRandomCellSelection = ({
         if (availableCells.length > 0) {
           const randomIndex = Math.floor(Math.random() * availableCells.length);
           const [randomRow, randomColumn] = availableCells[randomIndex];
+          const nextPlayer = "0";
 
           const boardCopy = structuredClone(board);
-          boardCopy[randomRow][randomColumn] = "0";
+          boardCopy[randomRow][randomColumn] = nextPlayer;
           setBoard(boardCopy);
           setBoardHistory((prevBoardHistory) => [...prevBoardHistory, boardCopy]);
 
@@ -60,22 +61,16 @@ const useRandomCellSelection = ({
             [players["0"].name, "0", randomRow, randomColumn],
           ]);
 
-          const isGameWinner = checkIsWinner({
-            nextRow: randomRow,
-            nextColumn: randomColumn,
-            nextPlayer: "0",
-            board: boardCopy,
-            boardSize,
-          });
-          const isGameDraw = checkIsDraw({
-            board: boardCopy,
-            boardSize,
-            isWinner: isGameWinner,
-          });
-
+          const { isGameWinner, isGameDraw } = updateGameStatus(
+            boardCopy,
+            randomRow,
+            randomColumn,
+            nextPlayer,
+            boardSize
+          );
           setIsWinner(isGameWinner);
           setIsDraw(isGameDraw);
-          setCurrentPlayer("0");
+          setCurrentPlayer(nextPlayer);
         }
       }
     }

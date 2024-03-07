@@ -10,7 +10,6 @@ import BoardSizeSelection from "./components/BoardSizeSelection";
 import OpponentTypeSelection from "./components/OpponentTypeSelection";
 import useRandomCellSelection from "./hooks/useRandomCellSelection";
 import useReplay from "./hooks/useReplay";
-import { checkIsDraw, checkIsWinner } from "./utils";
 import {
   BoardGrid,
   BoardSize,
@@ -19,6 +18,7 @@ import {
   PlayerType,
   Players,
 } from "./types/types";
+import { updateGameStatus } from "./utils/updateGameStatus";
 
 function App() {
   const [boardSize, setBoardSize] = useState<BoardSize>(3);
@@ -103,31 +103,6 @@ function App() {
     return boardCopy;
   }
 
-  function updateGameStatus(
-    boardCopy: BoardGrid,
-    rowIndex: number,
-    columnIndex: number,
-    nextPlayer: CurrentPlayer
-  ) {
-    const isGameWinner = checkIsWinner({
-      nextRow: rowIndex,
-      nextColumn: columnIndex,
-      nextPlayer,
-      board: boardCopy,
-      boardSize,
-    });
-
-    const isGameDraw = checkIsDraw({
-      board: boardCopy,
-      boardSize,
-      isWinner: isGameWinner,
-    });
-    setIsWinner(isGameWinner);
-    setIsDraw(isGameDraw);
-    setIsManualSelectionCompleted(true);
-    setCurrentPlayer(nextPlayer);
-  }
-
   function selectCellManuallyAndUpdateGameStatus(
     rowIndex: number,
     columnIndex: number
@@ -141,7 +116,17 @@ function App() {
         columnIndex,
         nextPlayer
       );
-      updateGameStatus(updatedBoard, rowIndex, columnIndex, nextPlayer);
+      const { isGameWinner, isGameDraw } = updateGameStatus(
+        updatedBoard,
+        rowIndex,
+        columnIndex,
+        nextPlayer,
+        boardSize
+      );
+      setIsWinner(isGameWinner);
+      setIsDraw(isGameDraw);
+      setCurrentPlayer(nextPlayer);
+      setIsManualSelectionCompleted(true);
     }
   }
 
