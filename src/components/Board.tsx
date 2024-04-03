@@ -15,19 +15,8 @@ const Board = ({ board, selectCell }: BoardParams) => {
             {row.map((column, columnIndex) => (
               <div
                 onClick={() => selectCell(rowIndex, columnIndex)}
-                style={{
-                  cursor: "pointer",
-                  width: "100px",
-                  height: "100px",
-                  border: "1px solid black",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  fontSize: "4em",
-                  margin: "2px",
-                }}
                 key={columnIndex}
-                className="d-flex justify-content-center align-items-center"
+                className="board-grid d-flex justify-content-center align-items-center"
               >
                 {board[rowIndex][columnIndex]}
               </div>

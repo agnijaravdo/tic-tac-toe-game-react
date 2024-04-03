@@ -184,14 +184,7 @@ function App() {
       <div className="container text-center mt-5">
         <h1>Tic Tac Toe Game</h1>
       </div>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
+      <div className="d-flex flex-column align-items-center">
         {!isNewGame && (
           <div className="mx-auto p-3">
             <BoardSizeSelection boardSize={boardSize} resetBoard={resetBoard} />
@@ -232,15 +225,7 @@ function App() {
               isReplay={isReplay}
               playerName={players[currentPlayer].name}
             />
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr auto 1fr",
-                gap: "20px",
-                marginBottom: "4rem",
-                alignItems: "start",
-              }}
-            >
+            <div className="grid-container">
               <div className="d-flex justify-content-center">
                 {!isDraw && !isWinner && (
                   <GameInfoCard
@@ -261,7 +246,7 @@ function App() {
                   {movesHistory.length > 0 ? (
                     <MovesHistory moves={movesHistory} />
                   ) : (
-                    <div style={{ width: "18rem", visibility: "hidden" }}></div>
+                    <div className="hidden-moves-history"></div>
                   )}
                 </div>
               )}

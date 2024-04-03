@@ -15,9 +15,9 @@ const PlayerInfo = ({ name, symbol, onNameChange }: PlayerInfoParams) => {
   };
 
   return (
-    <div className="card mb-3" style={{ width: "320px" }}>
+    <div className="card mb-3 player-info-card-width">
       <div className="card-header text-center">Player {symbol}</div>
-      <div className="card-body" style={{ minHeight: "72px" }}>
+      <div className="card-body player-info-body-width">
         <div className="row align-items-center">
           {isEditing ? (
             <>

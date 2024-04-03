@@ -14,7 +14,7 @@ const GameInfoCard = ({
 }: GameInfoCardParams) => {
   return (
     <div className="pt-4">
-      <div className="card" style={{ width: "18rem" }}>
+      <div className="card card-custom-width">
         <div className="card-header text-center">Game Info</div>
         <ul className="list-group list-group-flush text-center">
           <li className="list-group-item">
