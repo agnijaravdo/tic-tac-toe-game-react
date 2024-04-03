@@ -3,13 +3,13 @@ import { BoardSize, CurrentPlayer, Players } from "../types/types";
 
 type GameInfoCardParams = {
   boardSize: BoardSize;
-  currentPlayer: CurrentPlayer;
+  nextPlayer: CurrentPlayer;
   players: Players;
 };
 
 const GameInfoCard = ({
   boardSize,
-  currentPlayer,
+  nextPlayer,
   players,
 }: GameInfoCardParams) => {
   return (
@@ -18,7 +18,7 @@ const GameInfoCard = ({
         <div className="card-header text-center">Game Info</div>
         <ul className="list-group list-group-flush text-center">
           <li className="list-group-item">
-            Next Turn: {players[currentPlayer === "0" ? "X" : "0"].name}
+            Current Turn: {players[nextPlayer].name} ({nextPlayer})
           </li>
           <li className="list-group-item ">
             Board Size: {boardSize}x{boardSize}

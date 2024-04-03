@@ -25,6 +25,9 @@ function App() {
   const [playerType, setPlayerType] = useState<PlayerType>(PlayerType.Human);
   const [isNewGame, setIsNewGame] = useState(false);
   const [currentPlayer, setCurrentPlayer] = useState<CurrentPlayer>("0");
+
+  const nextPlayer = currentPlayer === "X" ? "0" : "X";
+
   const [movesHistory, setMovesHistory] = useState<HistoryEntry[]>([]);
   const [replayIndex, setReplayIndex] = useState(0);
   const [isWinner, setIsWinner] = useState(false);
@@ -107,10 +110,10 @@ function App() {
     rowIndex: number,
     columnIndex: number
   ) {
-    if (isReplay) return; // preventing cell selection when replay is hapenning
-    if (isManualSelectionCompleted && playerType === PlayerType.AI) return; // preventing cell selection when is AI move
+    if (isReplay) return;
+    if (isManualSelectionCompleted && playerType === PlayerType.AI) return;
+
     if (!board[rowIndex][columnIndex] && !isWinner) {
-      const nextPlayer = currentPlayer === "X" ? "0" : "X";
       const updatedBoard = processAndRecordPlayerMove(
         rowIndex,
         columnIndex,
@@ -242,7 +245,7 @@ function App() {
                 {!isDraw && !isWinner && (
                   <GameInfoCard
                     boardSize={boardSize}
-                    currentPlayer={currentPlayer}
+                    nextPlayer={nextPlayer}
                     players={players}
                   />
                 )}
