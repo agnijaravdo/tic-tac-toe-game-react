@@ -86,14 +86,7 @@ const useRandomCellSelection = ({
         clearTimeout(timeoutId);
       };
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [boardSize,
-    playerType,
-    isDraw,
-    isManualSelectionCompleted,
-    isWinner,
-    players,
-    board,]);
+  }, [boardSize, playerType, isDraw, isManualSelectionCompleted, isWinner, players, board, setBoard, setBoardHistory, setMovesHistory, setIsWinner, setIsDraw, setCurrentPlayer, setIsManualSelectionCompleted]);
 }
 
 export default useRandomCellSelection;

@@ -21,11 +21,11 @@ const useReplay = ({
 
     if (isReplay) {
       timeoutId = setTimeout(() => {
+        if(boardHistory.length <= replayIndex) return
+
         const currentBoard = boardHistory[replayIndex];
-        if (currentBoard) {
-          setBoard(currentBoard);
-          setReplayIndex((prevReplayIndex) => prevReplayIndex + 1);
-        }
+        setBoard(currentBoard);
+        setReplayIndex((prevReplayIndex) => prevReplayIndex + 1);
       }, 1000);
     }
 
@@ -34,8 +34,7 @@ const useReplay = ({
         clearTimeout(timeoutId);
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [boardHistory, replayIndex, isReplay]);
+  }, [boardHistory, replayIndex, isReplay, setBoard, setReplayIndex]);
 }
 
 export default useReplay;
