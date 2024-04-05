@@ -15,3 +15,10 @@ export enum PlayerType {
   Human = "Human",
   AI = "AI",
 }
+
+export enum GameStatus {
+  InProgress = "In Progress",
+  Draw = "Draw",
+  Winner = "Winner",
+  Replay = "Replay",
+}

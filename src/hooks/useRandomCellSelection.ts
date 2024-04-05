@@ -1,43 +1,39 @@
 import { useEffect } from 'react';
-import { BoardGrid, BoardSize, CurrentPlayer, HistoryEntry, PlayerType, Players } from '../types/types';
+import { BoardGrid, BoardSize, CurrentPlayer, GameStatus, HistoryEntry, PlayerType, Players } from '../types/types';
 import { updateGameStatus } from '../utils/updateGameStatus';
 
 type UseRandomCellSelectionParams = {
   boardSize: BoardSize,
   playerType: PlayerType,
-  isDraw: boolean,
   isManualSelectionCompleted: boolean,
-  isWinner: boolean,
   players: Players,
   board: BoardGrid,
+  gameStatus: GameStatus,
   setIsManualSelectionCompleted: React.Dispatch<React.SetStateAction<boolean>>;
   setBoard: React.Dispatch<React.SetStateAction<BoardGrid>>;
+  setGameStatus: React.Dispatch<React.SetStateAction<GameStatus>>;
   setBoardHistory: React.Dispatch<React.SetStateAction<BoardGrid[]>>;
   setMovesHistory: React.Dispatch<React.SetStateAction<HistoryEntry[]>>;
-  setIsWinner: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsDraw: React.Dispatch<React.SetStateAction<boolean>>;
   setCurrentPlayer: React.Dispatch<React.SetStateAction<CurrentPlayer>>;
 };
 
 const useRandomCellSelection = ({
   boardSize,
   playerType,
-  isDraw,
   isManualSelectionCompleted,
-  isWinner,
   players,
   board,
+  gameStatus,
   setIsManualSelectionCompleted,
   setBoard,
   setBoardHistory,
   setMovesHistory,
-  setIsWinner,
-  setIsDraw,
+  setGameStatus,
   setCurrentPlayer,
 }: UseRandomCellSelectionParams) => {
   useEffect(() => {
-    function selectCellRandomly(isGameWinner: boolean, isGameDraw: boolean) {
-      if (playerType === PlayerType.AI && !isGameWinner && !isGameDraw) {
+    function selectCellRandomly(gameStatus: GameStatus) {
+      if (playerType === PlayerType.AI && gameStatus === GameStatus.InProgress) { //check if replay is not needed
         let availableCells = [];
         for (let i = 0; i < boardSize; i++) {
           for (let j = 0; j < boardSize; j++) {
@@ -68,8 +64,12 @@ const useRandomCellSelection = ({
             nextPlayer,
             boardSize
           );
-          setIsWinner(isGameWinner);
-          setIsDraw(isGameDraw);
+          if (isGameWinner) {
+            setGameStatus(GameStatus.Winner);
+          }
+          if (isGameDraw) {
+            setGameStatus(GameStatus.Draw);
+          }
           setCurrentPlayer(nextPlayer);
         }
       }
@@ -77,7 +77,7 @@ const useRandomCellSelection = ({
 
     if (isManualSelectionCompleted && playerType === PlayerType.AI) {
       const timeoutId = setTimeout(() => {
-        selectCellRandomly(isWinner, isDraw);
+        selectCellRandomly(gameStatus);
         setIsManualSelectionCompleted(false);
         ;
       }, 200);
@@ -86,7 +86,7 @@ const useRandomCellSelection = ({
         clearTimeout(timeoutId);
       };
     }
-  }, [boardSize, playerType, isDraw, isManualSelectionCompleted, isWinner, players, board, setBoard, setBoardHistory, setMovesHistory, setIsWinner, setIsDraw, setCurrentPlayer, setIsManualSelectionCompleted]);
+  }, [boardSize, playerType, isManualSelectionCompleted, players, board, gameStatus, setBoard, setBoardHistory, setMovesHistory, setGameStatus, setCurrentPlayer, setIsManualSelectionCompleted]);
 }
 
 export default useRandomCellSelection;

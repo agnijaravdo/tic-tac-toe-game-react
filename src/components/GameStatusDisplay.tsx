@@ -1,22 +1,19 @@
 import React from "react";
 import Confetti from "react-confetti";
+import { GameStatus } from "../types/types";
 
-type GameStatusParams = {
-  isWinner: boolean;
-  isDraw: boolean;
-  isReplay: boolean;
+type GameStatusDisplayParams = {
+  gameStatus: GameStatus;
   playerName: string;
 };
 
-const GameStatus = ({
-  isWinner,
-  isDraw,
-  isReplay,
+const GameStatusDisplay = ({
+  gameStatus,
   playerName,
-}: GameStatusParams) => {
+}: GameStatusDisplayParams) => {
   return (
     <div className="text-center mt-4">
-      {isWinner && !isReplay ? (
+      {gameStatus === GameStatus.Winner ? (
         <>
           <h2 className="winner text-success">
             Player {playerName} is a winner!
@@ -26,14 +23,14 @@ const GameStatus = ({
       ) : (
         ""
       )}
-      {isDraw ? (
+      {gameStatus === GameStatus.Draw ? (
         <h2 className="draw text-warning">
           No winner! It's a draw!
         </h2>
       ) : (
         ""
       )}
-      {!isWinner && !isDraw ? (
+      {gameStatus === GameStatus.InProgress ? (
         <h2 className="status text-info">
           Game is in progress!
         </h2>
@@ -44,4 +41,4 @@ const GameStatus = ({
   );
 };
 
-export default GameStatus;
+export default GameStatusDisplay;

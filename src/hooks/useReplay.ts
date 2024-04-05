@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
-import { BoardGrid } from '../types/types';
+import { BoardGrid, GameStatus } from '../types/types';
 
 type UseReplayParams = {
-  isReplay: boolean,
+  gameStatus: GameStatus,
   boardHistory: BoardGrid[],
   replayIndex: number,
   setReplayIndex: React.Dispatch<React.SetStateAction<number>>;
@@ -10,7 +10,7 @@ type UseReplayParams = {
 };
 
 const useReplay = ({
-  isReplay,
+  gameStatus,
   boardHistory,
   replayIndex,
   setReplayIndex,
@@ -19,7 +19,7 @@ const useReplay = ({
   useEffect(() => {
     let timeoutId: number | NodeJS.Timeout;
 
-    if (isReplay) {
+    if (gameStatus === GameStatus.Replay) {
       timeoutId = setTimeout(() => {
         if(boardHistory.length <= replayIndex) return
 
@@ -34,7 +34,7 @@ const useReplay = ({
         clearTimeout(timeoutId);
       }
     };
-  }, [boardHistory, replayIndex, isReplay, setBoard, setReplayIndex]);
+  }, [gameStatus, boardHistory, replayIndex, setBoard, setReplayIndex]);
 }
 
 export default useReplay;

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./App.css";
 import MovesHistory from "./components/MovesHistory";
-import GameStatus from "./components/GameStatus";
+import GameStatusDisplay from "./components/GameStatusDisplay";
 import PlayerInfo from "./components/PlayerInfo";
 import Board from "./components/Board";
 import GameInfoCard from "./components/GameInfoCard";
@@ -17,6 +17,7 @@ import {
   HistoryEntry,
   PlayerType,
   Players,
+  GameStatus,
 } from "./types/types";
 import { updateGameStatus } from "./utils/updateGameStatus";
 
@@ -30,9 +31,7 @@ function App() {
 
   const [movesHistory, setMovesHistory] = useState<HistoryEntry[]>([]);
   const [replayIndex, setReplayIndex] = useState(0);
-  const [isWinner, setIsWinner] = useState(false);
-  const [isDraw, setIsDraw] = useState(false);
-  const [isReplay, setIsReplay] = useState(false);
+  const [gameStatus, setGameStatus] = useState<GameStatus>(GameStatus.InProgress);
   const [isManualSelectionCompleted, setIsManualSelectionCompleted] =
     useState(false);
   const [players, setPlayers] = useState<Players>({
@@ -65,22 +64,20 @@ function App() {
   useRandomCellSelection({
     boardSize,
     playerType,
-    isDraw,
     isManualSelectionCompleted,
-    isWinner,
     players,
     board,
+    gameStatus,
     setIsManualSelectionCompleted,
     setBoard,
+    setGameStatus,
     setBoardHistory,
     setMovesHistory,
-    setIsWinner,
-    setIsDraw,
     setCurrentPlayer,
   });
 
   useReplay({
-    isReplay,
+    gameStatus,
     boardHistory,
     replayIndex,
     setReplayIndex,
@@ -110,10 +107,10 @@ function App() {
     rowIndex: number,
     columnIndex: number
   ) {
-    if (isReplay) return;
+    if (gameStatus === GameStatus.Replay) return;
     if (isManualSelectionCompleted && playerType === PlayerType.AI) return;
 
-    if (!board[rowIndex][columnIndex] && !isWinner) {
+    if (!board[rowIndex][columnIndex] && gameStatus !== GameStatus.Winner) {
       const updatedBoard = processAndRecordPlayerMove(
         rowIndex,
         columnIndex,
@@ -126,8 +123,12 @@ function App() {
         nextPlayer,
         boardSize
       );
-      setIsWinner(isGameWinner);
-      setIsDraw(isGameDraw);
+      if (isGameWinner) {
+        setGameStatus(GameStatus.Winner);
+      }
+      if (isGameDraw) {
+        setGameStatus(GameStatus.Draw);
+      }
       setCurrentPlayer(nextPlayer);
       setIsManualSelectionCompleted(true);
     }
@@ -136,11 +137,9 @@ function App() {
   function resetCommonGameStates(boardSize: BoardSize) {
     setCurrentPlayer("0");
     setIsManualSelectionCompleted(false);
-    setIsWinner(false);
-    setIsDraw(false);
+    setGameStatus(GameStatus.InProgress);
     resetBoard(boardSize);
     setMovesHistory([]);
-    setIsReplay(false);
     setBoardHistory([]);
   }
 
@@ -180,7 +179,7 @@ function App() {
   }
 
   function handleGameReplayButtonClick() {
-    setIsReplay(true);
+    setGameStatus(GameStatus.Replay);
     setReplayIndex(0);  
   }
 
@@ -228,15 +227,13 @@ function App() {
 
         {isNewGame && (
           <>
-            <GameStatus
-              isWinner={isWinner}
-              isDraw={isDraw}
-              isReplay={isReplay}
+            <GameStatusDisplay
+              gameStatus={gameStatus}
               playerName={players[currentPlayer].name}
             />
             <div className="grid-container">
               <div className="d-flex justify-content-center">
-                {!isDraw && !isWinner && (
+                { gameStatus === GameStatus.InProgress && (
                   <GameInfoCard
                     boardSize={boardSize}
                     nextPlayer={nextPlayer}
@@ -250,7 +247,7 @@ function App() {
                   selectCell={selectCellManuallyAndUpdateGameStatus}
                 />
               </div>
-              {!isReplay && (
+              { gameStatus !== GameStatus.Replay && (
                 <div>
                   {movesHistory.length > 0 ? (
                     <MovesHistory moves={movesHistory} />
@@ -262,8 +259,7 @@ function App() {
             </div>
 
             <GameControlButtons
-              isWinner={isWinner}
-              isDraw={isDraw}
+              gameStatus={gameStatus}
               rematchGameWithSameSettings={rematchGameWithSameSettings}
               resetGame={resetGame}
               onReplayButtonClick={handleGameReplayButtonClick}
