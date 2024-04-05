@@ -179,6 +179,15 @@ function App() {
     });
   }
 
+  function handleGameReplayButtonClick() {
+    setIsReplay(true);
+    setReplayIndex(0);  
+  }
+
+  function handleSetPlayerTypeButtonClick(playerType: PlayerType) {
+    setPlayerType(playerType);
+  }
+
   return (
     <div>
       <div className="container text-center mt-5">
@@ -203,13 +212,13 @@ function App() {
               </ol>
               <OpponentTypeSelection
                 playerType={playerType}
-                setPlayerType={setPlayerType}
+                onPlayerTypeButtonClick={handleSetPlayerTypeButtonClick}
               />
             </div>
             <div className="text-center mt-4">
               <button
                 className="btn btn-success"
-                onClick={(e) => setIsNewGame(true)}
+                onClick={() => setIsNewGame(true)}
               >
                 Start New Game
               </button>
@@ -253,12 +262,11 @@ function App() {
             </div>
 
             <GameControlButtons
-              resetGame={resetGame}
-              rematchGameWithSameSettings={rematchGameWithSameSettings}
               isWinner={isWinner}
               isDraw={isDraw}
-              setIsReplay={setIsReplay}
-              setReplayIndex={setReplayIndex}
+              rematchGameWithSameSettings={rematchGameWithSameSettings}
+              resetGame={resetGame}
+              onReplayButtonClick={handleGameReplayButtonClick}
             />
           </>
         )}

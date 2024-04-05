@@ -3,14 +3,14 @@ import { PlayerType } from "../types/types";
 
 type OpponentTypeSelectionParams = {
   playerType: PlayerType;
-  setPlayerType: React.Dispatch<React.SetStateAction<PlayerType>>;
+  onPlayerTypeButtonClick: (playerType: PlayerType) => void;
 };
 
 const playerTypes = Object.values(PlayerType);
 
 const OpponentTypeSelection = ({
   playerType,
-  setPlayerType,
+  onPlayerTypeButtonClick,
 }: OpponentTypeSelectionParams) => {
   return (
     <div className="text-center mb-3">
@@ -25,7 +25,7 @@ const OpponentTypeSelection = ({
             className={`btn ${
               playerType === type ? "btn-primary" : "btn-outline-primary"
             }`}
-            onClick={() => setPlayerType(type)}
+            onClick={() => onPlayerTypeButtonClick(type)}
           >
             {type}
           </button>

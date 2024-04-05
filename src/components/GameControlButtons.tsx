@@ -1,22 +1,20 @@
-import React from "react";
+import React, { MouseEvent } from "react";
 import { BoardSize } from "../types/types";
 
 type GameControlButtonsParams = {
-  resetGame: (boardSize?: BoardSize) => void;
-  rematchGameWithSameSettings: () => void;
   isWinner: boolean;
   isDraw: boolean;
-  setIsReplay: React.Dispatch<React.SetStateAction<boolean>>;
-  setReplayIndex: React.Dispatch<React.SetStateAction<number>>;
+  rematchGameWithSameSettings: () => void;
+  resetGame: (size?: BoardSize) => void;
+  onReplayButtonClick: (event: MouseEvent<HTMLButtonElement>) => void;  
 };
 
 const GameControlButtons = ({
-  resetGame,
-  rematchGameWithSameSettings,
   isWinner,
   isDraw,
-  setIsReplay,
-  setReplayIndex,
+  rematchGameWithSameSettings,
+  resetGame,
+  onReplayButtonClick
 }: GameControlButtonsParams) => {
   return (
     <div className="text-center">
@@ -31,12 +29,7 @@ const GameControlButtons = ({
       </button>
       {isWinner || isDraw ? (
         <button
-          className="btn btn-primary m-2"
-          onClick={() => {
-            setIsReplay(true);
-            setReplayIndex(0);
-          }}
-        >
+          className="btn btn-primary m-2" onClick={onReplayButtonClick}>
           Replay
         </button>
       ) : null}
