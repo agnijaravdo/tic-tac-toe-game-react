@@ -17,6 +17,7 @@ export enum PlayerType {
 }
 
 export enum GameStatus {
+  NewGame = "New Game",
   InProgress = "In Progress",
   Draw = "Draw",
   Winner = "Winner",

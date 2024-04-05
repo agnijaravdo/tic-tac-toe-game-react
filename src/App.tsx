@@ -24,14 +24,13 @@ import { updateGameStatus } from "./utils/updateGameStatus";
 function App() {
   const [boardSize, setBoardSize] = useState<BoardSize>(3);
   const [playerType, setPlayerType] = useState<PlayerType>(PlayerType.Human);
-  const [isNewGame, setIsNewGame] = useState(false);
   const [currentPlayer, setCurrentPlayer] = useState<CurrentPlayer>("0");
 
   const nextPlayer = currentPlayer === "X" ? "0" : "X";
 
   const [movesHistory, setMovesHistory] = useState<HistoryEntry[]>([]);
   const [replayIndex, setReplayIndex] = useState(0);
-  const [gameStatus, setGameStatus] = useState<GameStatus>(GameStatus.InProgress);
+  const [gameStatus, setGameStatus] = useState<GameStatus>(GameStatus.NewGame);
   const [isManualSelectionCompleted, setIsManualSelectionCompleted] =
     useState(false);
   const [players, setPlayers] = useState<Players>({
@@ -137,7 +136,6 @@ function App() {
   function resetCommonGameStates(boardSize: BoardSize) {
     setCurrentPlayer("0");
     setIsManualSelectionCompleted(false);
-    setGameStatus(GameStatus.InProgress);
     resetBoard(boardSize);
     setMovesHistory([]);
     setBoardHistory([]);
@@ -149,11 +147,12 @@ function App() {
       0: { name: "Player 2" },
     });
     setPlayerType(PlayerType.Human);
-    setIsNewGame((prevIsNewGame) => !prevIsNewGame);
+    setGameStatus(GameStatus.NewGame);
     resetCommonGameStates(boardSize);
   }
 
   function rematchGameWithSameSettings() {
+    setGameStatus(GameStatus.InProgress);
     resetCommonGameStates(boardSize);
   }
 
@@ -193,7 +192,7 @@ function App() {
         <h1>Tic Tac Toe Game</h1>
       </div>
       <div className="d-flex flex-column align-items-center">
-        {!isNewGame && (
+        {gameStatus === GameStatus.NewGame && (
           <div className="mx-auto p-3">
             <BoardSizeSelection boardSize={boardSize} resetBoard={resetBoard} />
             <div className="mb-3">
@@ -217,7 +216,7 @@ function App() {
             <div className="text-center mt-4">
               <button
                 className="btn btn-success"
-                onClick={() => setIsNewGame(true)}
+                onClick={() => setGameStatus(GameStatus.InProgress)}
               >
                 Start New Game
               </button>
@@ -225,7 +224,7 @@ function App() {
           </div>
         )}
 
-        {isNewGame && (
+        {gameStatus !== GameStatus.NewGame && (
           <>
             <GameStatusDisplay
               gameStatus={gameStatus}
@@ -247,15 +246,15 @@ function App() {
                   selectCell={selectCellManuallyAndUpdateGameStatus}
                 />
               </div>
-              { gameStatus !== GameStatus.Replay && (
-                <div>
-                  {movesHistory.length > 0 ? (
-                    <MovesHistory moves={movesHistory} />
-                  ) : (
-                    <div className="hidden-moves-history"></div>
+                {gameStatus !== GameStatus.Replay && (
+                  <div>
+                    {movesHistory.length > 0 ? (
+                      <MovesHistory moves={movesHistory}/>
+                    ) : (
+                      <div className="hidden-moves-history"></div>
+                    )}
+                  </div>
                   )}
-                </div>
-              )}
             </div>
 
             <GameControlButtons
