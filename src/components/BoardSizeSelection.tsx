@@ -1,10 +1,20 @@
 import React from "react";
+import clsx from 'clsx';
 import { BoardSize } from "../types/types";
 
 type BoardSizeSelectionParams = {
   boardSize: BoardSize;
   resetBoard: (boardSize: BoardSize) => void;
 };
+
+function getBoardSizeSelectionButtonClass(currentSize: BoardSize, boardSize: BoardSize) {
+  return clsx('btn', {
+    'btn-primary': currentSize === boardSize,
+    'btn-outline-primary': currentSize !== boardSize,
+  });
+}
+
+const BOARD_SIZES: BoardSize[] = [3, 4, 5];
 
 const BoardSizeSelection = ({
   boardSize,
@@ -17,33 +27,16 @@ const BoardSizeSelection = ({
           Choose Board Size
         </label>
         <div className="btn-group" role="group">
-          <button
-            type="button"
-            className={`btn ${
-              boardSize === 3 ? "btn-primary" : "btn-outline-primary"
-            }`}
-            onClick={() => resetBoard(3)}
-          >
-            3x3
-          </button>
-          <button
-            type="button"
-            className={`btn ${
-              boardSize === 4 ? "btn-primary" : "btn-outline-primary"
-            }`}
-            onClick={() => resetBoard(4)}
-          >
-            4x4
-          </button>
-          <button
-            type="button"
-            className={`btn ${
-              boardSize === 5 ? "btn-primary" : "btn-outline-primary"
-            }`}
-            onClick={() => resetBoard(5)}
-          >
-            5x5
-          </button>
+          {BOARD_SIZES.map((size) => (
+            <button
+              key={size}
+              type="button"
+              className={getBoardSizeSelectionButtonClass(size, boardSize)}
+              onClick={() => resetBoard(size)}
+            >
+              {size}x{size}
+            </button>
+          ))}
         </div>
       </div>
     </div>

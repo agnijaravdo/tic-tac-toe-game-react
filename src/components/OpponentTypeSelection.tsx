@@ -1,4 +1,5 @@
 import React from "react";
+import clsx from 'clsx';
 import { PlayerType } from "../types/types";
 
 type OpponentTypeSelectionParams = {
@@ -22,9 +23,10 @@ const OpponentTypeSelection = ({
           <button
             key={type}
             type="button"
-            className={`btn ${
-              playerType === type ? "btn-primary" : "btn-outline-primary"
-            }`}
+            className={clsx('btn', {
+              'btn-primary': playerType === type,
+              'btn-outline-primary': playerType !== type,
+            })}
             onClick={() => onPlayerTypeButtonClick(type)}
           >
             {type}

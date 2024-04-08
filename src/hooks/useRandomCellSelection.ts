@@ -33,7 +33,7 @@ const useRandomCellSelection = ({
 }: UseRandomCellSelectionParams) => {
   useEffect(() => {
     function selectCellRandomly(gameStatus: GameStatus) {
-      if (playerType === PlayerType.AI && gameStatus === GameStatus.InProgress) { //check if replay is not needed
+      if (playerType === PlayerType.AI && gameStatus === GameStatus.InProgress) {
         let availableCells = [];
         for (let i = 0; i < boardSize; i++) {
           for (let j = 0; j < boardSize; j++) {
